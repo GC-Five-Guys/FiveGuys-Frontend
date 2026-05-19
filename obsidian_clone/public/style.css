@@ -1,0 +1,242 @@
+/* 옵시디언 스타일의 현대적인 다크 테마 */
+:root {
+    --bg-app: #0f0f0f;            /* 메인 앱 배경색 */
+    --bg-sidebar: #171717;        /* 사이드바 배경색 */
+    --bg-editor: #1a1a1a;         /* 에디터 배경색 */
+    --text-primary: #dcddde;      /* 기본 글자색 */
+    --text-muted: #999;           /* 보조 글자색 */
+    --accent: #7b61ff;            /* 강조색 (보라색) */
+    --accent-hover: #917cff;
+    --border-subtle: #2e2e2e;     /* 경계선 색상 */
+    --hover-bg: #2a2a2a;          /* 마우스 오버 시 배경색 */
+    --active-bg: #363636;         /* 선택된 항목 배경색 */
+    --sidebar-width: 280px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    display: flex;
+    margin: 0;
+    height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+/* [왼쪽 사이드바] */
+#sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--bg-sidebar);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+}
+
+.sidebar-header {
+    padding: 0 20px 20px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 10px;
+}
+
+.sidebar-header h2 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.header-actions { display: flex; gap: 12px; }
+
+.icon-btn {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    color: var(--text-primary);
+    background-color: var(--hover-bg);
+}
+
+/* [노트 트리 목록 스타일 - 구조 개편] */
+#note-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
+#note-list li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 개별 줄(파일 또는 폴더 헤더) 스타일 */
+.tree-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 20px;
+    cursor: pointer;
+    transition: background 0.1s;
+    border-left: 2px solid transparent;
+}
+
+.tree-row:hover {
+    background-color: var(--hover-bg);
+}
+
+/* 활성화된 파일 표시 */
+.tree-row.active {
+    background-color: var(--active-bg);
+    border-left-color: var(--accent);
+}
+
+/* 폴더 내부 리스트 들여쓰기 */
+.sub-folder {
+    list-style: none;
+    padding-left: 15px !important;
+    margin: 0;
+    border-left: 1px solid var(--border-subtle);
+    margin-left: 25px;
+}
+
+/* 삭제 버튼 (hover 시에만 노출) */
+.list-delete-btn {
+    opacity: 0;
+    color: var(--text-muted);
+    transition: opacity 0.2s, color 0.2s;
+    font-size: 14px;
+    padding: 2px 5px;
+}
+
+.tree-row:hover .list-delete-btn {
+    opacity: 1;
+}
+
+.list-delete-btn:hover {
+    color: #ff4d4d;
+}
+
+.folder-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* [테마 설정 메뉴] */
+#settings-menu {
+    background-color: var(--bg-sidebar);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    margin: 10px 15px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+}
+
+.setting-item label { color: var(--text-muted); }
+
+input[type="color"] {
+    background: none;
+    border: none;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+/* [메인 뷰어/에디터 영역] */
+#viewer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-app);
+    padding: 0;
+}
+
+.viewer-header {
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+#viewer-title {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 2rem;
+    font-weight: 700;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#viewer-title:disabled { opacity: 0.3; }
+
+#editor-container {
+    flex: 1;
+    max-width: 850px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 40px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#viewer-content { flex: 1; }
+
+/* [Toast UI 에디터 스타일 오버라이드] */
+.toastui-editor-defaultUI {
+    border: none !important;
+    background-color: var(--bg-app) !important;
+}
+
+.toastui-editor-toolbar { display: none !important; }
+
+/* 실시간 마크다운 스타일링 */
+.cm-strikethrough { text-decoration: line-through; color: var(--text-muted) !important; }
+.cm-strong { font-weight: bold; color: #ffffff !important; }
+.cm-em { font-style: italic; color: var(--accent) !important; }
+
+.toastui-editor-contents s { color: var(--text-muted) !important; text-decoration: line-through; }
+.toastui-editor-contents strong { color: #ffffff !important; font-weight: bold; }
+.toastui-editor-contents em { color: var(--accent) !important; }
+.toastui-editor-contents h1 { font-size: 2.2rem; color: #ffffff !important; border-bottom: none !important; }
+.toastui-editor-contents h2 { font-size: 1.8rem; color: #ffffff !important; border-bottom: none !important; }
+.toastui-editor-contents h3 { font-size: 1.5rem; color: #ffffff !important; }
+.toastui-editor-contents p { color: var(--text-primary) !important; }
+
+.toastui-editor-main { background-color: var(--bg-app) !important; }
+.toastui-editor-ww-container, .toastui-editor-md-container { background-color: var(--bg-app) !important; }
+.toastui-editor-mode-switch { background-color: var(--bg-app) !important; border-top: 1px solid var(--border-subtle) !important; }
+.toastui-editor-mode-switch .tab-item { background-color: var(--bg-app) !important; border: 1px solid var(--border-subtle) !important; color: var(--text-muted) !important; }
+.toastui-editor-mode-switch .tab-item.active { background-color: var(--active-bg) !important; color: var(--text-primary) !important; border-color: var(--accent) !important; }
+.toastui-editor-contents { font-size: 1.1rem !important; color: var(--text-primary) !important; background-color: var(--bg-app) !important; }
+
+/* [노트 미선택 시 화면 처리] */
+body:not(.show-editor) #editor-container, body:not(.show-editor) .viewer-header { display: none; }
+.no-file-message { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1.2rem; }
+body.show-editor .no-file-message { display: none; }

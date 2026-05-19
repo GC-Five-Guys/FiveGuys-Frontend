@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>My Obsidian</title>
+
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/theme/toastui-editor-dark.min.css" />
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+<!-- [왼쪽 사이드 바] -->
+<div id="sidebar">
+  <div class="sidebar-header">
+    <h2>File List</h2>
+    <div class="header-actions">
+      <button id="new-note-btn" class="icon-btn" title="New Note">＋</button>
+      <button id="new-folder-btn" class="icon-btn" title="New Folder">📁</button>
+      <button id="settings-btn" class="icon-btn" title="Settings">⚙</button>
+    </div>
+  </div>
+
+  <!-- [ 사이드 ] 설정 메뉴 (평소에는 숨김) -->
+  <div id="settings-menu" style="display: none;">
+    <div class="setting-item">
+      <label>Background</label>
+      <input type="color" id="bg-color-picker" value="#0f0f0f">
+    </div>
+    <div class="setting-item">
+      <label>Text</label>
+      <input type="color" id="text-color-picker" value="#dcddde">
+    </div>
+    <button id="reset-theme" style="width: 100%; cursor: pointer; background: var(--hover-bg); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 5px; border-radius: 4px;">Reset Theme</button>
+  </div>
+
+  <!-- [ 사이드 ] 저장된 노트 리스트 -->
+  <ul id="note-list"></ul>
+</div>
+
+<!-- [노트 내용이 표시되는 콘텐츠 영역] -->
+<div id="viewer">
+  <div class="no-file-message">
+    Select a note or create a new one to start writing
+  </div>
+
+  <div class="viewer-header">
+    <input type="text" id="viewer-title" placeholder="Untitled" disabled>
+  </div>
+
+  <div id="editor-container">
+    <div id="viewer-content"></div>
+  </div>
+</div>
+</body>
+</html>
