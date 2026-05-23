@@ -1,26 +1,27 @@
-// [전역 변수] 현재 열려있는 파일의 경로를 저장
 let currentFileName = "";
 let autoSaveTimeout = null;
-let editor;
+let vditor;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 에디터 생성 (WYSIWYG 모드)
-    editor = new toastui.Editor({
-        el: document.querySelector('#viewer-content'),
+    // Vditor 생성 (Instant Rendering 모드)
+    vditor = new Vditor('vditor', {
         height: '100%',
-        initialEditType: 'wysiwyg',
-        hideModeSwitch: true,
+        mode: 'ir', // 실시간 마크다운 적용
         theme: 'dark',
-        placeholder: '내용을 입력해 보세요... (**굵게**, ~~취소선~~, # 제목)',
-        autofocus: true
-    });
-
-    editor.on("change", () => {
-        if(!currentFileName) return;
-        if(autoSaveTimeout) clearTimeout(autoSaveTimeout);
-        autoSaveTimeout = setTimeout(() => {
-            saveNote();
-        }, 1000)
+        placeholder: '내용을 입력해 보세요...',
+        outline: {
+            enable: false, // 네비게이션 기능 비활성화
+        },
+        cache: {
+            enable: false,
+        },
+        input(value) {
+            if(!currentFileName) return;
+            if(autoSaveTimeout) clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                saveNote();
+            }, 1000)
+        }
     });
 
     const newNoteBtn = document.getElementById('new-note-btn');
@@ -180,7 +181,7 @@ async function loadNoteContent(path) {
         const response = await fetch(`/api/notes/${encodeURIComponent(path)}`);
         const data = await response.json();
         titleElement.value = path.split('/').pop().replace('.md', '');
-        editor.setMarkdown(data.content);
+        vditor.setValue(data.content);
     } catch (error) { console.error(error); }
 }
 
@@ -188,7 +189,7 @@ async function loadNoteContent(path) {
 async function saveNote(){
     if(!currentFileName) return;
     const title = document.getElementById('viewer-title').value;
-    const content = editor.getMarkdown();
+    const content = vditor.getValue();
     try {
         const response = await fetch(`/api/notes/${encodeURIComponent(currentFileName)}`, {
             method: 'PUT',
