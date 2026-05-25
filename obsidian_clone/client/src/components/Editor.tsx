@@ -1,11 +1,12 @@
-import React, { useEffect, useRef } from 'react';
-import { useEditor, EditorContent, ReactRenderer } from '@tiptap/react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useEditor, EditorContent, ReactRenderer, JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Mention from '@tiptap/extension-mention';
 import Placeholder from '@tiptap/extension-placeholder';
 import tippy, { Instance } from 'tippy.js';
-import 'tippy.js/dist/tippy.css'; // Missing CSS
+import 'tippy.js/dist/tippy.css'; 
 import { TagSuggestionList } from './TagSuggestionList';
+import { TagSummaryTable } from './TagSummaryTable';
 
 interface EditorProps {
   currentPath: string;
@@ -13,11 +14,25 @@ interface EditorProps {
   setSaveStatus: (status: string) => void;
 }
 
+interface TagsState {
+  persons: string[];
+  topics: string[];
+  objects: string[];
+}
+
+const TAG_TOKEN_PATTERN = /(^|\s)([@#&])([^\s@#&]+)/g;
+
 const suggestions = {
   person: ['엄마', '아빠', '동기A', '교수님'],
   topic: ['감정조절', '공부', '회사', '여행'],
   object: ['커피', '독서', '프로젝트', '노트북']
 };
+
+const tagTypeToNodeName = {
+  person: 'mention',
+  topic: 'topic',
+  object: 'object',
+} as const;
 
 const createSuggestionConfig = (type: 'person' | 'topic' | 'object', char: string) => ({
   char,
@@ -113,6 +128,56 @@ export const Editor: React.FC<EditorProps> = ({
   setSaveStatus,
 }) => {
   const autoSaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [tags, setTags] = useState<TagsState>({ persons: [], topics: [], objects: [] });
+
+  const extractTags = (json: JSONContent) => {
+    const persons = new Set<string>();
+    const topics = new Set<string>();
+    const objects = new Set<string>();
+
+    const addTag = (target: Set<string>, value: unknown) => {
+      if (typeof value !== 'string') return;
+
+      const normalized = value.trim();
+      if (normalized) {
+        target.add(normalized);
+      }
+    };
+
+    const extractTextTags = (text: string) => {
+      for (const match of text.matchAll(TAG_TOKEN_PATTERN)) {
+        const [, , marker, rawLabel] = match;
+        const label = rawLabel.replace(/[.,!?;:)\]}]+$/g, '');
+
+        if (marker === '@') addTag(persons, label);
+        if (marker === '#') addTag(topics, label);
+        if (marker === '&') addTag(objects, label);
+      }
+    };
+
+    const traverse = (node: JSONContent) => {
+      if (node.type === 'mention') {
+        addTag(persons, node.attrs?.label || node.attrs?.id);
+      } else if (node.type === 'topic') {
+        addTag(topics, node.attrs?.label || node.attrs?.id);
+      } else if (node.type === 'object') {
+        addTag(objects, node.attrs?.label || node.attrs?.id);
+      } else if (node.type === 'text' && node.text) {
+        extractTextTags(node.text);
+      }
+
+      if (node.content) {
+        node.content.forEach(traverse);
+      }
+    };
+
+    traverse(json);
+    return {
+      persons: Array.from(persons),
+      topics: Array.from(topics),
+      objects: Array.from(objects)
+    };
+  };
 
   const editor = useEditor({
     extensions: [
@@ -135,6 +200,10 @@ export const Editor: React.FC<EditorProps> = ({
     ],
     content: '',
     onUpdate: ({ editor }) => {
+      // Extract tags for the table
+      const newTags = extractTags(editor.getJSON());
+      setTags(newTags);
+
       setSaveStatus("저장 중...");
       if (autoSaveTimeout.current) clearTimeout(autoSaveTimeout.current);
       autoSaveTimeout.current = setTimeout(() => {
@@ -143,6 +212,34 @@ export const Editor: React.FC<EditorProps> = ({
     },
   });
 
+  const addTagFromSummary = (type: 'topic' | 'person' | 'object', label: string) => {
+    if (!editor) return;
+
+    const normalized = label.trim();
+    if (!normalized) return;
+
+    const currentTags = extractTags(editor.getJSON());
+    const tagKey = type === 'person' ? 'persons' : type === 'topic' ? 'topics' : 'objects';
+    if (currentTags[tagKey].includes(normalized)) {
+      return;
+    }
+
+    editor
+      .chain()
+      .focus()
+      .insertContent([
+        {
+          type: tagTypeToNodeName[type],
+          attrs: { id: normalized, label: normalized },
+        },
+        {
+          type: 'text',
+          text: ' ',
+        },
+      ])
+      .run();
+  };
+
   // Load content when currentPath changes
   useEffect(() => {
     if (editor && currentPath) {
@@ -150,6 +247,8 @@ export const Editor: React.FC<EditorProps> = ({
         .then(res => res.json())
         .then(data => {
           editor.commands.setContent(data.content || '');
+          // Extract initial tags
+          setTags(extractTags(editor.getJSON()));
           setSaveStatus("저장됨 ✓");
         })
         .catch(console.error);
@@ -172,6 +271,9 @@ export const Editor: React.FC<EditorProps> = ({
           readOnly
         />
       </div>
+      
+      <TagSummaryTable tags={tags} onAddTag={addTagFromSummary} />
+
       <div id="editor-container">
         <EditorContent editor={editor} />
       </div>
