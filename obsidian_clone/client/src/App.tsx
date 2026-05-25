@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import Vditor from 'vditor';
 import { useNotes } from './hooks/useNotes';
 import { Sidebar } from './components/Sidebar';
 import { Editor } from './components/Editor';
@@ -24,32 +23,19 @@ function App() {
   const [selectedFolderPath, setSelectedFolderPath] = useState<string>("");
   const [activeView, setActiveView] = useState<'file' | 'graph'>('file');
   const [showSettings, setShowSettings] = useState(false);
-  const [vditor, setVditor] = useState<Vditor | null>(null);
 
-  const saveNote = async (vInstance?: Vditor) => {
-    const currentV = vInstance || vditor;
-    const titleInput = document.getElementById('viewer-title') as HTMLInputElement;
-    if (!currentPath || !currentV || !titleInput) return;
-
-    const title = titleInput.value;
-    const content = currentV.getValue();
+  const saveNote = async (content: string) => {
+    if (!currentPath) return;
 
     try {
       const response = await fetch(`/api/notes/${encodeURIComponent(currentPath)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newFileName: title, content: content })
+        body: JSON.stringify({ content: content })
       });
 
       if (response.ok) {
-        const data = await response.json();
         setSaveStatus("저장됨 ✓");
-        
-        if (currentPath !== data.fileName) {
-          setOpenTabs(prev => prev.map(t => t.path === currentPath ? { path: data.fileName, name: title } : t));
-          setCurrentPath(data.fileName);
-          refreshNoteList();
-        }
       }
     } catch (error) {
       console.error('Save failed:', error);
@@ -161,8 +147,6 @@ function App() {
                 currentPath={currentPath}
                 onSave={saveNote}
                 setSaveStatus={setSaveStatus}
-                vditor={vditor}
-                setVditor={setVditor}
               />
             ) : (
               <div className="placeholder-view">노트를 선택하거나 새로 생성하세요.</div>
