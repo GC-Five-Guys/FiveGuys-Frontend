@@ -11,43 +11,143 @@
   <script src="script.js" defer></script>
 </head>
 <body>
-<!-- [왼쪽 사이드 바] -->
-<div id="sidebar">
-  <div class="sidebar-header">
-    <h2>File List</h2>
-    <div class="header-actions">
-      <button id="new-note-btn" class="icon-btn" title="New Note">＋</button>
-      <button id="new-folder-btn" class="icon-btn" title="New Folder">📁</button>
-      <button id="settings-btn" class="icon-btn" title="Settings">⚙</button>
-    </div>
+  <div id="app-container">
+    <!-- [Pane 1] 세로 메뉴바 (60px) -->
+    <nav id="vertical-menu">
+      <div class="menu-top">
+        <button class="menu-item active" title="파일 모드">📁</button>
+        <button class="menu-item" title="그래프 모드">🌐</button>
+      </div>
+      <div class="menu-bottom">
+        <button id="settings-btn" class="menu-item" title="설정">⚙</button>
+      </div>
+    </nav>
+
+    <!-- [Pane 2] 파일목록바 (240px) -->
+    <aside id="file-sidebar">
+      <div class="sidebar-section">
+        <div class="section-header">
+          <h3>최근 노트</h3>
+        </div>
+        <ul id="recent-notes-list">
+          <!-- 최근 5개 노트 로드됨 -->
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-header">
+          <h3>일기</h3>
+          <div class="header-actions">
+            <button id="new-folder-btn" title="새 폴더">📁+</button>
+            <button id="new-note-btn" title="새 파일">📄+</button>
+          </div>
+        </div>
+        <ul id="note-list">
+          <!-- 트리 구조 로드됨 -->
+        </ul>
+      </div>
+    </aside>
+
+    <!-- [Pane 3] 메인 영역 (가변) -->
+    <main id="main-content">
+      <header id="tab-bar">
+        <div class="tabs-container" id="tabs-container">
+          <!-- 탭들이 여기에 추가됨 -->
+          <!-- <div class="tab active">📄 2026-05-23 <span class="tab-close">×</span></div> -->
+        </div>
+      </header>
+
+      <div id="editor-view" class="view-pane">
+        <div class="viewer-header">
+          <input type="text" id="viewer-title" placeholder="제목 없는 일기" disabled>
+        </div>
+        <div id="editor-container">
+          <div id="vditor"></div>
+        </div>
+      </div>
+      
+      <div id="graph-view" class="view-pane" style="display: none;">
+        <!-- 그래프 모드 영역 -->
+        <div class="placeholder-view">그래프 모드 준비 중...</div>
+      </div>
+    </main>
+
+    <!-- [Pane 4] 우측바 (300px) -->
+    <aside id="right-sidebar">
+      <div class="search-container">
+        <input type="text" id="search-input" placeholder="🔍 검색…">
+      </div>
+
+      <div class="tags-section">
+        <h4>🏷 자주 쓴 태그</h4>
+        <div class="tag-group">
+          <h5>주제</h5>
+          <div class="tags">
+            <span class="tag">#감정조절(12)</span>
+            <span class="tag">#공부(8)</span>
+            <span class="tag">#회사(5)</span>
+          </div>
+        </div>
+        <div class="tag-group">
+          <h5>인물</h5>
+          <div class="tags">
+            <span class="tag">@엄마(7)</span>
+            <span class="tag">@동기A(4)</span>
+            <span class="tag">@교수님(3)</span>
+          </div>
+        </div>
+        <div class="tag-group">
+          <h5>오브젝트</h5>
+          <div class="tags">
+            <span class="tag">&커피(6)</span>
+            <span class="tag">&독서(4)</span>
+            <span class="tag">&프로젝트(3)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="calendar-section">
+        <h4>📅 2026 / 5월</h4>
+        <div id="mini-calendar">
+          <table class="calendar-table">
+            <thead>
+              <tr><th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th></tr>
+            </thead>
+            <tbody>
+              <tr><td></td><td>1</td><td>2</td><td class="has-note">3</td><td>4</td><td>5</td><td>6</td></tr>
+              <tr><td>7</td><td class="has-note">8</td><td class="has-note">9</td><td class="has-note">10</td><td class="has-note">11</td><td>12</td><td>13</td></tr>
+              <tr><td>14</td><td class="has-note">15</td><td>16</td><td>17</td><td>18</td><td>19</td><td>20</td></tr>
+              <tr><td>21</td><td class="has-note">22</td><td class="has-note active">23</td><td>24</td><td>25</td><td>26</td><td>27</td></tr>
+              <tr><td>28</td><td>29</td><td>30</td><td>31</td><td></td><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </aside>
   </div>
 
-  <!-- [ 사이드 ] 설정 메뉴 (평소에는 숨김) -->
-  <div id="settings-menu" style="display: none;">
+  <!-- [바닥글] 하단바 -->
+  <footer id="status-bar">
+    <div class="status-left">
+    </div>
+    <div class="status-right">
+      <span id="save-status">저장됨 ✓</span>
+      <span class="divider">|</span>
+      <span class="version">v0.2.0</span>
+    </div>
+  </footer>
+
+  <!-- [ 설정 ] 설정 메뉴 (평소에는 숨김) -->
+  <div id="settings-menu" class="floating-menu" style="display: none;">
     <div class="setting-item">
       <label>Background</label>
-      <input type="color" id="bg-color-picker" value="#0f0f0f">
+      <input type="color" id="bg-color-picker" value="#191919">
     </div>
     <div class="setting-item">
       <label>Text</label>
       <input type="color" id="text-color-picker" value="#dcddde">
     </div>
-    <button id="reset-theme" style="width: 100%; cursor: pointer; background: var(--hover-bg); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 5px; border-radius: 4px;">Reset Theme</button>
+    <button id="reset-theme">Reset Theme</button>
   </div>
-
-  <!-- [ 사이드 ] 저장된 노트 리스트 -->
-  <ul id="note-list"></ul>
-</div>
-
-<!-- [노트 내용이 표시되는 콘텐츠 영역] -->
-<div id="viewer">
-  <div class="viewer-header">
-    <input type="text" id="viewer-title" placeholder="Untitled" disabled>
-  </div>
-
-  <div id="editor-container">
-    <div id="vditor"></div>
-  </div>
-</div>
 </body>
 </html>
