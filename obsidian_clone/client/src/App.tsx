@@ -1,9 +1,19 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNotes } from './hooks/useNotes';
 import { Sidebar } from './components/Sidebar';
 import { Editor } from './components/Editor';
 import { Tabs } from './components/Tabs';
 import { StatusBar } from './components/StatusBar';
+import { RightSidebar } from './components/RightSidebar';
+import { TagSearchResultsView } from './components/TagSearchResultsView';
+import {
+  countTopTags,
+  fetchNoteTagIndex,
+  makeSnippet,
+  normalizeTagLabel,
+  NoteTagIndexEntry,
+  TagType,
+} from './utils/tagSearch';
 
 function App() {
   const {
@@ -23,6 +33,56 @@ function App() {
   const [selectedFolderPath, setSelectedFolderPath] = useState<string>("");
   const [activeView, setActiveView] = useState<'file' | 'graph'>('file');
   const [showSettings, setShowSettings] = useState(false);
+  const [tagIndex, setTagIndex] = useState<NoteTagIndexEntry[]>([]);
+  const [selectedTagType, setSelectedTagType] = useState<TagType>('topic');
+  const [tagSearchQuery, setTagSearchQuery] = useState('');
+  const [activeTagSearch, setActiveTagSearch] = useState<{ type: TagType; query: string } | null>(null);
+
+  const loadTagIndex = useCallback(async () => {
+    if (!treeData.length) {
+      setTagIndex([]);
+      return;
+    }
+
+    try {
+      const nextIndex = await fetchNoteTagIndex(treeData);
+      setTagIndex(nextIndex);
+    } catch (error) {
+      console.error('Failed to load tag index:', error);
+    }
+  }, [treeData]);
+
+  useEffect(() => {
+    loadTagIndex();
+  }, [loadTagIndex]);
+
+  const topTags = useMemo(() => countTopTags(tagIndex), [tagIndex]);
+
+  const tagSearchResults = useMemo(() => {
+    if (!activeTagSearch) return [];
+
+    return tagIndex
+      .filter((note) => note.tags[activeTagSearch.type].includes(activeTagSearch.query))
+      .map((note) => ({
+        path: note.path,
+        title: note.title,
+        tags: note.tags,
+        snippet: makeSnippet(note.content, activeTagSearch.query),
+      }));
+  }, [activeTagSearch, tagIndex]);
+
+  const runTagSearch = useCallback((type = selectedTagType, query = tagSearchQuery) => {
+    const normalizedQuery = normalizeTagLabel(query);
+    if (!normalizedQuery) {
+      setActiveTagSearch(null);
+      return;
+    }
+
+    setSelectedTagType(type);
+    setTagSearchQuery(normalizedQuery);
+    setActiveView('file');
+    setActiveTagSearch({ type, query: normalizedQuery });
+  }, [selectedTagType, tagSearchQuery]);
 
   const saveNote = async (content: string) => {
     if (!currentPath) return;
@@ -36,6 +96,7 @@ function App() {
 
       if (response.ok) {
         setSaveStatus("저장됨 ✓");
+        loadTagIndex();
       }
     } catch (error) {
       console.error('Save failed:', error);
@@ -92,6 +153,11 @@ function App() {
     } catch (error) { console.error(error); }
   };
 
+  const handleOpenTagResult = (path: string) => {
+    openNote(path);
+    setActiveTagSearch(null);
+  };
+
   return (
     <div id="app-container" onClick={() => setShowSettings(false)}>
       {/* [Pane 1] 세로 메뉴바 */}
@@ -143,13 +209,33 @@ function App() {
               onTabClose={closeTab}
             />
             {currentPath ? (
+              activeTagSearch ? (
+                <TagSearchResultsView
+                  query={activeTagSearch.query}
+                  tagType={activeTagSearch.type}
+                  results={tagSearchResults}
+                  onOpenNote={handleOpenTagResult}
+                  onClear={() => setActiveTagSearch(null)}
+                />
+              ) : (
               <Editor
                 currentPath={currentPath}
                 onSave={saveNote}
                 setSaveStatus={setSaveStatus}
               />
+              )
             ) : (
-              <div className="placeholder-view">노트를 선택하거나 새로 생성하세요.</div>
+              activeTagSearch ? (
+                <TagSearchResultsView
+                  query={activeTagSearch.query}
+                  tagType={activeTagSearch.type}
+                  results={tagSearchResults}
+                  onOpenNote={handleOpenTagResult}
+                  onClear={() => setActiveTagSearch(null)}
+                />
+              ) : (
+                <div className="placeholder-view">노트를 선택하거나 새로 생성하세요.</div>
+              )
             )}
           </main>
         </>
@@ -159,27 +245,15 @@ function App() {
         </main>
       )}
 
-      {/* [Pane 4] 우측바 (Static for now as per original UI) */}
-      <aside id="right-sidebar">
-        <div className="search-container">
-          <input type="text" id="search-input" placeholder="🔍 검색…" />
-        </div>
-        <div className="tags-section">
-          <h4>🏷 자주 쓴 태그</h4>
-          <div className="tag-group">
-            <h5>주제</h5>
-            <div className="tags">
-              <span className="tag">#감정조절(12)</span>
-              <span className="tag">#공부(8)</span>
-              <span className="tag">#회사(5)</span>
-            </div>
-          </div>
-        </div>
-        <div className="calendar-section">
-          <h4>📅 2026 / 5월</h4>
-          <div className="placeholder-view" style={{ fontSize: '0.8rem' }}>캘린더 데이터 로드 중...</div>
-        </div>
-      </aside>
+      <RightSidebar
+        selectedTagType={selectedTagType}
+        searchQuery={tagSearchQuery}
+        topTags={topTags}
+        onTagTypeChange={setSelectedTagType}
+        onSearchQueryChange={setTagSearchQuery}
+        onSearchSubmit={() => runTagSearch()}
+        onTopTagClick={(type, label) => runTagSearch(type, label)}
+      />
 
       <StatusBar saveStatus={saveStatus} />
 
