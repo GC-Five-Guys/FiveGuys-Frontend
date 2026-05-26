@@ -3,6 +3,8 @@ export interface FileNode {
   type: 'file' | 'folder';
   path: string;
   children?: FileNode[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Tab {
