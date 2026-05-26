@@ -50,12 +50,12 @@ export const normalizeTagLabel = (value: string) => (
 );
 
 export const flattenFiles = (nodes: FileNode[]) => {
-  const files: { name: string; path: string }[] = [];
+  const files: FileNode[] = [];
 
   const walk = (items: FileNode[]) => {
     items.forEach((item) => {
       if (item.type === 'file') {
-        files.push({ name: item.name, path: item.path });
+        files.push(item);
       } else if (item.children) {
         walk(item.children);
       }

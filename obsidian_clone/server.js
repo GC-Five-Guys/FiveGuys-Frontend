@@ -25,10 +25,14 @@ async function getFileTree(dirPath) {
                 children: await getFileTree(fullPath)
             };
         } else if (entry.name.endsWith('.md')) {
+            const stats = await fs.stat(fullPath);
+
             return {
                 name: entry.name,
                 type: 'file',
                 path: relativePath,
+                createdAt: stats.birthtime.toISOString(),
+                updatedAt: stats.mtime.toISOString(),
             };
         }
     }));
@@ -150,6 +154,6 @@ app.delete(/\/api\/notes\/(.+)/, async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '127.0.0.1', () => {
     console.log(`✅ Operating the Obsidian Server: http://localhost:${PORT}`);
 });

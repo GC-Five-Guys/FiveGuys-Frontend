@@ -9,11 +9,29 @@ import { TagSearchResultsView } from './components/TagSearchResultsView';
 import {
   countTopTags,
   fetchNoteTagIndex,
+  flattenFiles,
   makeSnippet,
   normalizeTagLabel,
   NoteTagIndexEntry,
   TagType,
 } from './utils/tagSearch';
+import { FileNode } from './types';
+
+const toDateKey = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getFileDateKey = (file: FileNode) => {
+  const fileDate = file.name.match(/^(\d{4}-\d{2}-\d{2})\.md$/);
+  if (fileDate) {
+    return fileDate[1];
+  }
+
+  return file.createdAt ? toDateKey(new Date(file.createdAt)) : '';
+};
 
 function App() {
   const {
@@ -57,6 +75,17 @@ function App() {
   }, [loadTagIndex]);
 
   const topTags = useMemo(() => countTopTags(tagIndex), [tagIndex]);
+
+  const calendarNotes = useMemo(() => (
+    flattenFiles(treeData)
+      .filter((file) => getFileDateKey(file))
+      .map((file) => ({
+        path: file.path,
+        title: file.name.replace('.md', ''),
+        createdAt: file.createdAt || '',
+        dateKey: getFileDateKey(file),
+      }))
+  ), [treeData]);
 
   const tagSearchResults = useMemo(() => {
     if (!activeTagSearch) return [];
@@ -158,6 +187,40 @@ function App() {
     setActiveTagSearch(null);
   };
 
+  const handleCalendarDateClick = async (dateKey: string) => {
+    const existingNote = calendarNotes.find((note) => note.dateKey === dateKey);
+
+    setActiveView('file');
+    setActiveTagSearch(null);
+
+    if (existingNote) {
+      openNote(existingNote.path);
+      return;
+    }
+
+    if (!confirm(`${dateKey} 일기를 생성할까요?`)) return;
+
+    try {
+      const response = await fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileName: `${dateKey}.md` }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        await refreshNoteList();
+        openNote(data.fileName);
+      } else {
+        alert('이미 해당 날짜의 일기가 있거나 파일을 만들 수 없습니다.');
+        await refreshNoteList();
+      }
+    } catch (error) {
+      console.error(error);
+      alert('일기 파일을 생성하지 못했습니다.');
+    }
+  };
+
   return (
     <div id="app-container" onClick={() => setShowSettings(false)}>
       {/* [Pane 1] 세로 메뉴바 */}
@@ -249,10 +312,12 @@ function App() {
         selectedTagType={selectedTagType}
         searchQuery={tagSearchQuery}
         topTags={topTags}
+        calendarNotes={calendarNotes}
         onTagTypeChange={setSelectedTagType}
         onSearchQueryChange={setTagSearchQuery}
         onSearchSubmit={() => runTagSearch()}
         onTopTagClick={(type, label) => runTagSearch(type, label)}
+        onCalendarDateClick={handleCalendarDateClick}
       />
 
       <StatusBar saveStatus={saveStatus} />

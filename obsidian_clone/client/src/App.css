@@ -596,20 +596,137 @@ body {
 }
 
 /* 캘린더 */
-.calendar-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: center; }
-.calendar-table th { padding: 8px 0; color: var(--text-secondary); font-weight: 500; }
-.calendar-table td { padding: 10px 0; position: relative; cursor: pointer; }
-.calendar-table td:hover { background: rgba(255, 255, 255, 0.05); border-radius: 4px; }
-.calendar-table td.has-note::after {
-    content: '';
+.calendar-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.calendar-title-wrap {
+    position: relative;
+}
+.calendar-nav {
+    display: flex;
+    gap: 4px;
+}
+.calendar-header button {
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+}
+.calendar-title-button {
+    width: auto !important;
+    min-width: 96px;
+    padding: 0 10px;
+    font-size: 0.8rem !important;
+    font-weight: 700;
+    text-align: left;
+}
+.calendar-header button:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+}
+.calendar-picker {
     position: absolute;
-    bottom: 4px; left: 50%;
+    top: 32px;
+    left: 0;
+    z-index: 20;
+    width: 216px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+}
+.calendar-picker label {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+.calendar-picker select {
+    height: 30px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    padding: 0 8px;
+    outline: none;
+}
+.calendar-month-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+.calendar-month-grid button {
+    width: 100%;
+    height: 28px;
+    font-size: 0.75rem;
+}
+.calendar-month-grid button.active {
+    color: white;
+    background: var(--accent);
+}
+.calendar-table { 
+    width: 100%; 
+    table-layout: fixed;
+    border-collapse: separate; 
+    border-spacing: 2px;
+    font-size: 0.8rem; 
+    text-align: center; 
+}
+.calendar-table th { 
+    height: 24px;
+    color: var(--text-secondary); 
+    font-weight: 500; 
+}
+.calendar-table td {
+    height: 32px;
+    padding: 0;
+}
+.calendar-table button {
+    position: relative;
+    width: 100%;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+.calendar-table button:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+.calendar-table button.today {
+    color: var(--text-primary);
+    outline: 1px solid var(--accent);
+}
+.calendar-table button.has-note {
+    color: var(--text-primary);
+    background: rgba(46, 170, 220, 0.08);
+}
+.calendar-table button i {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
     transform: translateX(-50%);
-    width: 4px; height: 4px;
+    width: 4px;
+    height: 4px;
     background: var(--accent);
     border-radius: 50%;
 }
-.calendar-table td.active { background: var(--accent); color: white; border-radius: 50%; }
+.calendar-empty {
+    pointer-events: none;
+}
 
 /* 하단바 */
 #status-bar {
