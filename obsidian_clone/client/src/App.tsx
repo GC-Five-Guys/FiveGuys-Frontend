@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import LoginPage from './components/LoginPage';
 import { useNotes } from './hooks/useNotes';
 import { Sidebar } from './components/Sidebar';
 import { Editor } from './components/Editor';
@@ -33,7 +34,7 @@ const getFileDateKey = (file: FileNode) => {
   return file.createdAt ? toDateKey(new Date(file.createdAt)) : '';
 };
 
-function App() {
+function MainApp() {
   const {
     treeData,
     openTabs,
@@ -333,6 +334,20 @@ function App() {
       )}
     </div>
   );
+}
+
+function App() {
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  if (!isLoggedIn) {
+
+    return <LoginPage onLogin={() => setIsLoggedIn(true)} />;
+
+  }
+
+  return <MainApp />;
+
 }
 
 export default App;
