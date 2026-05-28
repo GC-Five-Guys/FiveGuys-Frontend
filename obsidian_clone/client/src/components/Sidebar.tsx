@@ -1,4 +1,5 @@
 import React from 'react';
+import appIcon from '../assets/yggdrasil_icon_transparent.svg';
 
 interface SidebarProps {
   treeData: any[];
@@ -61,6 +62,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside id="file-sidebar">
+      <div className="app-brand">
+        <img src={appIcon} alt="Yggdrasil 로고" />
+        <div>
+          <strong>Yggdrasil</strong>
+          <span>나만의 지식 일기</span>
+        </div>
+      </div>
+
       <div className="sidebar-section">
         <div className="section-header">
           <h3>최근 노트</h3>
