@@ -595,6 +595,99 @@ body {
     color: var(--text-primary);
 }
 
+
+/* 3D Graph View */
+#graph-view {
+    min-height: 0;
+    background: #101010;
+}
+
+.graph-toolbar {
+    min-height: 76px;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: #151515;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.graph-toolbar p {
+    margin: 0 0 4px;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+}
+
+.graph-toolbar h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+}
+
+.graph-type-toggle {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.graph-type-toggle button {
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.035);
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0 12px;
+    font-weight: 700;
+}
+
+.graph-type-toggle button:hover,
+.graph-type-toggle button.active {
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.graph-canvas {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+}
+
+.graph-canvas::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 26%, rgba(0, 0, 0, 0.18));
+}
+
+.graph-canvas canvas {
+    display: block;
+}
+
+.graph-empty {
+    position: absolute;
+    inset: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.graph-empty strong {
+    color: var(--text-primary);
+}
+
+
 /* 캘린더 */
 .calendar-header {
     position: relative;

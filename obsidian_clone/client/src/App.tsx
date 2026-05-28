@@ -7,6 +7,7 @@ import { Tabs } from './components/Tabs';
 import { StatusBar } from './components/StatusBar';
 import { RightSidebar } from './components/RightSidebar';
 import { TagSearchResultsView } from './components/TagSearchResultsView';
+import { GraphView } from './components/GraphView';
 import {
   countTopTags,
   fetchNoteTagIndex,
@@ -251,21 +252,20 @@ function MainApp() {
         </div>
       </nav>
 
-      {activeView === 'file' ? (
-        <>
-          <Sidebar
-            treeData={treeData}
-            recentNotes={recentNotes}
-            selectedFolderPath={selectedFolderPath}
-            currentPath={currentPath}
-            setSelectedFolderPath={setSelectedFolderPath}
-            openNote={openNote}
-            handleCreateNote={handleCreateNote}
-            handleCreateFolder={handleCreateFolder}
-            handleDelete={handleDelete}
-          />
+      <Sidebar
+        treeData={treeData}
+        recentNotes={recentNotes}
+        selectedFolderPath={selectedFolderPath}
+        currentPath={currentPath}
+        setSelectedFolderPath={setSelectedFolderPath}
+        openNote={openNote}
+        handleCreateNote={handleCreateNote}
+        handleCreateFolder={handleCreateFolder}
+        handleDelete={handleDelete}
+      />
 
-          <main id="main-content">
+      {activeView === 'file' ? (
+        <main id="main-content">
             <Tabs
               openTabs={openTabs}
               currentPath={currentPath}
@@ -302,24 +302,31 @@ function MainApp() {
               )
             )}
           </main>
-        </>
       ) : (
         <main id="main-content">
-          <div className="placeholder-view">그래프 모드 준비 중...</div>
+          <GraphView
+            notes={tagIndex}
+            onOpenNote={(path) => {
+              openNote(path);
+              setActiveView('file');
+            }}
+          />
         </main>
       )}
 
-      <RightSidebar
-        selectedTagType={selectedTagType}
-        searchQuery={tagSearchQuery}
-        topTags={topTags}
-        calendarNotes={calendarNotes}
-        onTagTypeChange={setSelectedTagType}
-        onSearchQueryChange={setTagSearchQuery}
-        onSearchSubmit={() => runTagSearch()}
-        onTopTagClick={(type, label) => runTagSearch(type, label)}
-        onCalendarDateClick={handleCalendarDateClick}
-      />
+      {activeView === 'file' && (
+        <RightSidebar
+          selectedTagType={selectedTagType}
+          searchQuery={tagSearchQuery}
+          topTags={topTags}
+          calendarNotes={calendarNotes}
+          onTagTypeChange={setSelectedTagType}
+          onSearchQueryChange={setTagSearchQuery}
+          onSearchSubmit={() => runTagSearch()}
+          onTopTagClick={(type, label) => runTagSearch(type, label)}
+          onCalendarDateClick={handleCalendarDateClick}
+        />
+      )}
 
       <StatusBar saveStatus={saveStatus} />
 
