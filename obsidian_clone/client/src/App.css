@@ -884,6 +884,421 @@ body {
     #file-sidebar { display: none; }
 }
 
+/* =============================================
+   Yggdrasil application theme
+   ============================================= */
+
+:root {
+    --bg-primary: #f4f1de;
+    --bg-secondary: rgba(255, 255, 255, 0.72);
+    --bg-menu: #1f4d23;
+    --text-primary: #26372d;
+    --text-secondary: rgba(38, 55, 45, 0.62);
+    --border: rgba(45, 90, 39, 0.16);
+    --accent: #2d5a27;
+
+    --mention-bg: rgba(45, 90, 39, 0.12);
+    --mention-text: #2d5a27;
+    --tag-bg: rgba(163, 201, 168, 0.32);
+    --tag-text: #2f683f;
+    --object-bg: rgba(212, 163, 115, 0.22);
+    --object-text: #9b5f1f;
+
+    --surface-paper: rgba(255, 253, 245, 0.86);
+    --surface-soft: rgba(250, 250, 247, 0.74);
+    --shadow-sm: 0 1px 2px rgba(30, 50, 35, 0.06);
+    --shadow-md: 0 8px 24px rgba(30, 50, 35, 0.08);
+    --shadow-lg: 0 18px 48px rgba(30, 50, 35, 0.12);
+}
+
+body {
+    background:
+        radial-gradient(circle at 18% 16%, rgba(163, 201, 168, 0.26), transparent 28%),
+        linear-gradient(135deg, #f7f2e6 0%, #f4f1de 48%, #edf3e7 100%);
+    color: var(--text-primary);
+}
+
+#app-container {
+    background:
+        radial-gradient(circle at 18% 18%, rgba(163, 201, 168, 0.18), transparent 30%),
+        radial-gradient(circle at 86% 72%, rgba(212, 163, 115, 0.12), transparent 28%),
+        linear-gradient(135deg, #f7f2e6 0%, #f4f1de 54%, #eef4e8 100%);
+    padding-bottom: var(--status-height);
+}
+
+#vertical-menu {
+    background: linear-gradient(180deg, #2d5a27 0%, #183f1d 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 8px 0 28px rgba(30, 50, 35, 0.12);
+}
+
+.menu-item {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    color: rgba(255, 253, 245, 0.68);
+}
+
+.menu-item:hover,
+.menu-item.active {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fffdf5;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+#file-sidebar,
+#right-sidebar {
+    background: var(--surface-paper);
+    border-color: var(--border);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(18px);
+}
+
+#file-sidebar {
+    padding: 20px 10px;
+}
+
+#right-sidebar {
+    padding: 22px;
+}
+
+.section-header {
+    padding: 0 10px 10px;
+}
+
+.section-header h3,
+.tag-search-panel h4,
+.tags-section h4,
+.calendar-section h4 {
+    color: var(--accent);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.header-actions button,
+.tag-results-header button,
+.calendar-header button {
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid var(--border);
+    color: var(--accent);
+}
+
+.header-actions button:hover,
+.tag-results-header button:hover,
+.calendar-header button:hover {
+    background: rgba(163, 201, 168, 0.22);
+    color: var(--accent);
+}
+
+.tree-row {
+    min-height: 34px;
+    margin: 2px 0;
+    padding: 7px 10px;
+    border-radius: 10px;
+    color: var(--text-secondary);
+    transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+
+.tree-row:hover {
+    background: rgba(163, 201, 168, 0.2);
+    color: var(--text-primary);
+}
+
+.tree-row.active,
+.tree-row.selected-folder {
+    background: linear-gradient(135deg, rgba(45, 90, 39, 0.14), rgba(163, 201, 168, 0.24));
+    color: var(--accent);
+    border-left: 0;
+    box-shadow: inset 0 0 0 1px rgba(45, 90, 39, 0.18);
+}
+
+.list-delete-btn:hover {
+    color: #d64545;
+}
+
+#main-content {
+    background:
+        linear-gradient(180deg, rgba(255, 253, 245, 0.68), rgba(244, 241, 222, 0.44)),
+        transparent;
+}
+
+#tab-bar {
+    height: 48px;
+    padding: 8px 14px 0;
+    background: rgba(255, 253, 245, 0.68);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(14px);
+}
+
+.tabs-container {
+    gap: 6px;
+}
+
+.tab {
+    min-height: 36px;
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px 12px 0 0;
+    background: rgba(255, 255, 255, 0.54);
+    color: var(--text-secondary);
+    box-shadow: var(--shadow-sm);
+}
+
+.tab.active {
+    background: #fffdf5;
+    border-top: 3px solid var(--accent);
+    color: var(--accent);
+}
+
+.viewer-header {
+    padding-top: 46px;
+}
+
+#viewer-title {
+    font-family: "Noto Serif KR", Lora, Georgia, serif;
+    color: var(--accent);
+}
+
+#editor-container {
+    padding-bottom: 56px;
+}
+
+.ProseMirror {
+    color: var(--text-primary);
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+    color: rgba(38, 55, 45, 0.38);
+}
+
+.tag-summary-table,
+.tag-result-card,
+.tag-result-empty,
+.graph-empty,
+.floating-menu,
+.suggestion-list {
+    background: var(--surface-paper);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+}
+
+.tag-summary-table {
+    border-radius: 14px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.tag-summary-table th {
+    background: rgba(163, 201, 168, 0.14);
+    color: var(--text-secondary);
+}
+
+.summary-tag,
+.mention-node {
+    border-radius: 999px;
+}
+
+.summary-tag-form,
+.tag-search-form,
+.calendar-picker select {
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.62);
+    color: var(--text-primary);
+}
+
+.summary-tag-form,
+.tag-search-form {
+    border-radius: 12px;
+}
+
+.summary-tag-form:focus-within,
+.tag-search-form:focus-within {
+    border-color: rgba(45, 90, 39, 0.46);
+    box-shadow: 0 0 0 3px rgba(163, 201, 168, 0.24);
+}
+
+.summary-tag-form button,
+.tag-search-form button {
+    background: rgba(45, 90, 39, 0.08);
+    color: var(--accent);
+    border-left: 1px solid var(--border);
+}
+
+.summary-tag-form button:hover,
+.tag-search-form button:hover {
+    background: rgba(45, 90, 39, 0.16);
+    color: var(--accent);
+}
+
+.tag-type-toggle {
+    background: rgba(255, 255, 255, 0.52);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+.tag-type-toggle button {
+    border-radius: 10px;
+}
+
+.tag-type-toggle button:hover,
+.tag-type-toggle button.active {
+    background: linear-gradient(180deg, #3d7a35 0%, #2d5a27 100%);
+    color: #fffdf5;
+}
+
+.tag {
+    background: rgba(255, 255, 255, 0.58);
+    box-shadow: inset 0 0 0 1px rgba(45, 90, 39, 0.1);
+}
+
+.tag:hover {
+    background: rgba(163, 201, 168, 0.24);
+    color: var(--accent);
+}
+
+#tag-results-view {
+    padding-top: 40px;
+}
+
+.tag-results-header {
+    border-bottom: 1px solid var(--border);
+}
+
+.tag-results-header h2 {
+    font-family: "Noto Serif KR", Lora, Georgia, serif;
+    color: var(--accent);
+}
+
+.tag-result-card {
+    border-radius: 14px;
+}
+
+.tag-result-card:hover {
+    border-color: rgba(45, 90, 39, 0.28);
+    background: #fffdf5;
+}
+
+#graph-view {
+    background:
+        radial-gradient(circle at 50% 22%, rgba(163, 201, 168, 0.24), transparent 34%),
+        linear-gradient(180deg, #f4f1de 0%, #e8efe2 100%);
+}
+
+.graph-toolbar {
+    background: rgba(255, 253, 245, 0.84);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(14px);
+}
+
+.graph-toolbar p {
+    color: var(--text-secondary);
+}
+
+.graph-toolbar h2 {
+    color: var(--accent);
+    font-family: "Noto Serif KR", Lora, Georgia, serif;
+}
+
+.graph-type-toggle button {
+    background: rgba(255, 255, 255, 0.64);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-secondary);
+}
+
+.graph-type-toggle button:hover,
+.graph-type-toggle button.active {
+    color: #fffdf5;
+    border-color: transparent;
+    background: linear-gradient(180deg, #3d7a35 0%, #2d5a27 100%);
+}
+
+.graph-canvas::after {
+    background: linear-gradient(180deg, rgba(255, 253, 245, 0.4), transparent 30%, rgba(45, 90, 39, 0.08));
+}
+
+.calendar-picker {
+    border-radius: 14px;
+    background: #fffdf5;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+}
+
+.calendar-month-grid button.active,
+.calendar-table button.has-note {
+    color: #fffdf5;
+    background: linear-gradient(180deg, #3d7a35 0%, #2d5a27 100%);
+}
+
+.calendar-table button {
+    border-radius: 10px;
+    color: var(--text-secondary);
+}
+
+.calendar-table button:hover {
+    background: rgba(163, 201, 168, 0.18);
+    color: var(--accent);
+}
+
+.calendar-table button.today {
+    color: var(--accent);
+    outline: 1px solid rgba(45, 90, 39, 0.42);
+    background: rgba(255, 255, 255, 0.64);
+}
+
+.calendar-table button.has-note i {
+    background: #fffdf5;
+}
+
+#status-bar {
+    background: rgba(31, 77, 35, 0.96);
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    color: rgba(255, 253, 245, 0.78);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 80;
+}
+
+.suggestion-item {
+    color: var(--text-secondary);
+}
+
+.suggestion-item.is-selected {
+    background: var(--accent);
+    color: #fffdf5;
+}
+
+.suggestion-item:hover {
+    background: rgba(163, 201, 168, 0.18);
+}
+
+.floating-menu {
+    border-radius: 16px;
+    color: var(--text-primary);
+}
+
+.floating-menu button {
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: linear-gradient(180deg, #3d7a35 0%, #2d5a27 100%);
+    color: #fffdf5;
+    cursor: pointer;
+}
+
+.placeholder-view {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-family: "Noto Serif KR", Lora, Georgia, serif;
+    font-size: 1.2rem;
+}
+
 
 /* =============================================
    Yggdrasil 로그인 페이지 전용 스타일

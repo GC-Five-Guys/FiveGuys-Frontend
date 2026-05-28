@@ -27,7 +27,10 @@ interface GraphLink {
 
 const graphTypes: TagType[] = ['topic', 'person', 'object'];
 
-const nodeColor = '#E2E8F0';
+const nodeColor = '#2D5A27';
+const tagNodeColor = '#A3C9A8';
+const fileNodeColor = '#F7F0E8';
+const labelColor = '#264653';
 const labelCache = new Map<string, THREE.Sprite>();
 
 const buildTreeGraph = (notes: NoteTagIndexEntry[], activeType: TagType) => {
@@ -82,7 +85,7 @@ const buildTreeGraph = (notes: NoteTagIndexEntry[], activeType: TagType) => {
   };
 };
 
-const createTextSprite = (text: string, color = nodeColor) => {
+const createTextSprite = (text: string, color = labelColor) => {
   const cacheKey = `${text}:${color}`;
   const cached = labelCache.get(cacheKey);
   if (cached) return cached.clone();
@@ -118,8 +121,8 @@ const createNodeObject = (node: GraphNode) => {
       new THREE.SphereGeometry(8.4, 36, 36),
       new THREE.MeshStandardMaterial({
         color: nodeColor,
-        roughness: 0.5,
-        metalness: 0.05,
+        roughness: 0.42,
+        metalness: 0.02,
       }),
     );
     group.add(core);
@@ -138,9 +141,9 @@ const createNodeObject = (node: GraphNode) => {
     const dot = new THREE.Mesh(
       new THREE.SphereGeometry(radius, 32, 32),
       new THREE.MeshStandardMaterial({
-        color: nodeColor,
-        roughness: 0.5,
-        metalness: 0.05,
+        color: tagNodeColor,
+        roughness: 0.48,
+        metalness: 0.02,
       }),
     );
     group.add(dot);
@@ -158,9 +161,9 @@ const createNodeObject = (node: GraphNode) => {
   const fileDot = new THREE.Mesh(
     new THREE.SphereGeometry(radius, 24, 24),
     new THREE.MeshStandardMaterial({
-      color: nodeColor,
-      roughness: 0.52,
-      metalness: 0.04,
+      color: fileNodeColor,
+      roughness: 0.56,
+      metalness: 0.02,
     }),
   );
   group.add(fileDot);
@@ -208,12 +211,12 @@ export const GraphView: React.FC<GraphViewProps> = ({ notes, onOpenNote }) => {
           <ForceGraph3D
             ref={graphRef}
             graphData={graphData}
-            backgroundColor="#101010"
+            backgroundColor="#F4F1DE"
             nodeLabel={(node: GraphNode) => node.type === 'tag' && node.count
               ? `${node.label} (${node.count})`
               : node.label}
             nodeThreeObject={(node: GraphNode) => createNodeObject(node)}
-            linkColor={() => 'rgba(226, 232, 240, 0.42)'}
+            linkColor={() => 'rgba(45, 90, 39, 0.34)'}
             linkWidth={(link: GraphLink) => link.kind === 'root' ? 1.5 : 0.7}
             linkOpacity={0.62}
             cooldownTicks={180}
