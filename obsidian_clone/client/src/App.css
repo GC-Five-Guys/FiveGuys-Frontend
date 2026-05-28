@@ -595,6 +595,7 @@ body {
     color: var(--text-primary);
 }
 
+
 /* 3D Graph View */
 #graph-view {
     min-height: 0;
@@ -685,6 +686,7 @@ body {
 .graph-empty strong {
     color: var(--text-primary);
 }
+
 
 /* 캘린더 */
 .calendar-header {
@@ -882,3 +884,526 @@ body {
     #file-sidebar { display: none; }
 }
 
+
+/* =============================================
+   Yggdrasil 로그인 페이지 전용 스타일
+   ============================================= */
+
+:root {
+  --ygg-green: #2d5a27;
+  --ygg-green-mid: #3d7a35;
+  --ygg-sprout: #a3c9a8;
+  --ygg-ochre: #d4a373;
+  --ygg-paper: #f4f1de;
+  --ygg-ink: #264653;
+  --ygg-ink-dark: #2f3e46;
+  --ygg-cream: #fbf6ea;
+  --ygg-trunk: #f0ead6;
+}
+
+.login-page {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ede8d2;
+  font-family: Inter, Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.login-bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── 로그인 카드 ── */
+.login-card {
+  position: relative;
+  z-index: 5;
+  width: min(460px, calc(100vw - 40px));
+  padding: 52px 48px 40px;
+  border-radius: 24px;
+  background: rgba(255, 253, 245, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow:
+    0 32px 80px rgba(30, 50, 35, 0.16),
+    0 8px 24px rgba(30, 50, 35, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+}
+
+/* ── 앱 아이콘 ── */
+.login-logo-box {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.login-logo-wrap {
+  width: 76px;
+  height: 76px;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #3d7a35 0%, #254f20 100%);
+  box-shadow: 0 12px 28px rgba(37, 90, 39, 0.3);
+  overflow: hidden;
+  position: relative;
+}
+
+.login-logo-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.logo-dot,
+.logo-line {
+  position: absolute;
+  display: block;
+}
+
+.logo-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #c5dfc8;
+}
+
+.logo-dot-top {
+  top: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.logo-dot-left {
+  top: 35px;
+  left: 14px;
+}
+
+.logo-dot-right {
+  top: 35px;
+  right: 14px;
+}
+
+.logo-line {
+  width: 3px;
+  border-radius: 999px;
+  background: #d8eed9;
+}
+
+.logo-line-main {
+  height: 38px;
+  left: 50%;
+  top: 22px;
+  transform: translateX(-50%);
+}
+
+.logo-line-left,
+.logo-line-right {
+  height: 22px;
+  top: 34px;
+  transform-origin: bottom center;
+}
+
+.logo-line-left {
+  left: 31px;
+  transform: rotate(-55deg);
+}
+
+.logo-line-right {
+  right: 31px;
+  transform: rotate(55deg);
+}
+
+/* ── 타이틀 ── */
+.login-title {
+  margin: 0 0 32px;
+  text-align: center;
+  font-family: "Lora", Georgia, serif;
+  font-size: clamp(36px, 5vw, 50px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ygg-green);
+}
+
+/* ── 폼 ── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-label {
+  margin-top: 8px;
+  margin-bottom: 2px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #2a3d2f;
+  letter-spacing: 0.01em;
+}
+
+.login-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  border: 1.5px solid rgba(45, 90, 39, 0.18);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.7);
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+.login-input-wrap:focus-within {
+  border-color: rgba(45, 90, 39, 0.48);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 3.5px rgba(163, 201, 168, 0.28);
+}
+
+.login-input-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  flex-shrink: 0;
+  color: #7aab7e;
+}
+
+.login-input-wrap input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: var(--ygg-ink-dark);
+  font-family: inherit;
+}
+
+.login-input-wrap input::placeholder {
+  color: rgba(47, 62, 70, 0.38);
+}
+
+.password-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: rgba(47, 62, 70, 0.45);
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+
+.password-toggle:hover {
+  color: var(--ygg-green);
+}
+
+/* ── 로그인 버튼 ── */
+.login-button {
+  height: 52px;
+  margin-top: 20px;
+  border: 0;
+  border-radius: 11px;
+  background: linear-gradient(180deg, #3d7a35 0%, #2a5824 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(37, 90, 39, 0.28);
+  transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+}
+
+.login-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 14px 30px rgba(37, 90, 39, 0.34);
+}
+
+.login-button:active {
+  transform: translateY(0);
+  filter: brightness(0.97);
+}
+
+/* ── 회원가입 링크 ── */
+.signup-text {
+  margin: 22px 0 0;
+  text-align: center;
+  color: rgba(47, 62, 70, 0.55);
+  font-size: 14px;
+}
+
+.signup-link {
+  border: 0;
+  background: transparent;
+  color: var(--ygg-green);
+  font-weight: 800;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+/* ════════════════════════════════════════
+   배경 나무 (paper-cut CSS 도형)
+   SVG 파일이 생기면 이 섹션을 교체
+   ════════════════════════════════════════ */
+
+.login-background-tree {
+  position: absolute;
+  z-index: 1;
+  left: -80px;
+  bottom: 60px;
+  width: 560px;
+  height: 680px;
+  pointer-events: none;
+}
+
+/* 나뭇잎 덩어리 — paper-cut 레이어 효과 */
+.tree-foliage {
+  position: absolute;
+  border-radius: 50%;
+}
+
+/* 가장 뒤쪽 (어두운 초록) */
+.foliage-back-left {
+  width: 240px;
+  height: 220px;
+  left: 20px;
+  top: 80px;
+  background: radial-gradient(ellipse at 40% 30%, #8aaf85, #4f7a4a);
+  box-shadow: inset 0 -8px 18px rgba(0,0,0,0.12), 0 12px 28px rgba(30,55,30,0.14);
+}
+
+.foliage-back-right {
+  width: 220px;
+  height: 210px;
+  left: 240px;
+  top: 100px;
+  background: radial-gradient(ellipse at 60% 30%, #8aaf85, #4f7a4a);
+  box-shadow: inset 0 -8px 18px rgba(0,0,0,0.12), 0 12px 28px rgba(30,55,30,0.14);
+}
+
+/* 중간 레이어 (밝은 초록) */
+.foliage-mid-left {
+  width: 255px;
+  height: 235px;
+  left: 40px;
+  top: 20px;
+  background: radial-gradient(ellipse at 38% 28%, #c2dab8, #7aaa72);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -10px 20px rgba(0,0,0,0.08), 0 10px 22px rgba(30,55,30,0.12);
+}
+
+.foliage-mid-right {
+  width: 240px;
+  height: 230px;
+  left: 250px;
+  top: 40px;
+  background: radial-gradient(ellipse at 58% 28%, #b8d5ae, #6f9e68);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -10px 20px rgba(0,0,0,0.08), 0 10px 22px rgba(30,55,30,0.12);
+}
+
+/* 최상단 레이어 (가장 밝은 초록) */
+.foliage-top {
+  width: 220px;
+  height: 210px;
+  left: 150px;
+  top: 0;
+  background: radial-gradient(ellipse at 45% 25%, #d3e8c8, #9cc494);
+  box-shadow: inset 0 3px 0 rgba(255,255,255,0.5), 0 8px 20px rgba(30,55,30,0.1);
+}
+
+/* 줄기 */
+.tree-trunk {
+  position: absolute;
+  left: 248px;
+  top: 170px;
+  width: 30px;
+  height: 310px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f0ead6, #e4dcc4);
+  box-shadow: 2px 0 8px rgba(30,50,30,0.1);
+  transform: rotate(1deg);
+}
+
+/* 가지 */
+.tree-branch {
+  position: absolute;
+  height: 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f0ead6, #e0d9c2);
+  transform-origin: left center;
+}
+
+.branch-left-1 {
+  width: 155px;
+  left: 115px;
+  top: 278px;
+  transform: rotate(30deg);
+}
+
+.branch-left-2 {
+  width: 135px;
+  left: 140px;
+  top: 224px;
+  transform: rotate(-38deg);
+}
+
+.branch-right-1 {
+  width: 165px;
+  left: 258px;
+  top: 262px;
+  transform: rotate(-30deg);
+}
+
+.branch-right-2 {
+  width: 140px;
+  left: 262px;
+  top: 212px;
+  transform: rotate(36deg);
+}
+
+/* 가지 끝 원형 노드 */
+.tree-node {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fdfaf0, #ece4c8);
+  box-shadow: 0 6px 16px rgba(30, 50, 30, 0.16), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.node-top   { left: 242px; top: 90px; }
+.node-left-1 { left: 68px;  top: 265px; }
+.node-left-2 { left: 138px; top: 185px; }
+.node-right-1 { left: 408px; top: 238px; }
+.node-right-2 { left: 358px; top: 168px; }
+
+/* 뿌리 */
+.tree-root {
+  position: absolute;
+  height: 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e8e0c8, #d4cbb0);
+  transform-origin: left center;
+}
+
+.root-1 {
+  width: 140px;
+  left: 220px;
+  top: 470px;
+  transform: rotate(34deg);
+}
+
+.root-2 {
+  width: 150px;
+  left: 120px;
+  top: 494px;
+  transform: rotate(-26deg);
+}
+
+.root-3 {
+  width: 165px;
+  left: 244px;
+  top: 512px;
+  transform: rotate(-14deg);
+}
+
+/* ── 바닥 언덕 ── */
+.login-ground {
+  position: absolute;
+  left: -6vw;
+  right: -6vw;
+  height: 180px;
+  border-radius: 55% 55% 0 0 / 100% 100% 0 0;
+}
+
+.ground-back {
+  z-index: 2;
+  bottom: -80px;
+  background: #9ec4a3;
+  transform: rotate(-1.5deg) scaleX(1.05);
+}
+
+.ground-front {
+  z-index: 3;
+  bottom: -105px;
+  background: var(--ygg-green);
+  transform: rotate(1.5deg) scaleX(1.05);
+}
+
+/* ── 부유 잎 ── */
+.login-leaf {
+  position: absolute;
+  z-index: 4;
+  width: 32px;
+  height: 16px;
+  border-radius: 100% 0 100% 0;
+  background: var(--ygg-sprout);
+  box-shadow: 0 4px 12px rgba(30, 55, 30, 0.1);
+}
+
+.leaf-1 { right: 12vw; top: 18vh; transform: rotate(-28deg); opacity: 0.9; }
+.leaf-2 { right: 18vw; top: 46vh; background: var(--ygg-ochre); transform: rotate(-16deg); opacity: 0.85; }
+.leaf-3 { right: 26vw; top: 62vh; background: #8cbf90; transform: rotate(-22deg); opacity: 0.8; }
+
+/* ── 반응형 ── */
+@media (max-width: 900px) {
+  .login-card {
+    margin-left: 0;
+    width: min(420px, calc(100vw - 32px));
+    padding: 44px 32px 34px;
+  }
+
+  .login-background-tree {
+    left: -200px;
+    opacity: 0.5;
+  }
+
+  .login-leaf { display: none; }
+}
+
+@media (max-width: 520px) {
+  .login-page {
+    align-items: center;
+    padding: 0 16px;
+  }
+
+  .login-card {
+    padding: 40px 24px 30px;
+    border-radius: 20px;
+  }
+
+  .login-title {
+    font-size: 38px;
+  }
+
+  .login-background-tree {
+    left: -280px;
+    opacity: 0.3;
+    transform: scale(0.8);
+    transform-origin: bottom left;
+  }
+
+  .login-ground {
+    height: 130px;
+  }
+}
