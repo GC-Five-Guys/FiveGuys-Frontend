@@ -11,6 +11,8 @@ interface SidebarProps {
   handleCreateNote: () => void;
   handleCreateFolder: () => void;
   handleDelete: (path: string, type: 'file' | 'folder', name: string) => void;
+  isDarkMode: boolean;
+  onToggleTheme: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -23,6 +25,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   handleCreateNote,
   handleCreateFolder,
   handleDelete,
+  isDarkMode,
+  onToggleTheme,
 }) => {
   const renderTree = (nodes: any[]) => {
     return nodes.map((node) => (
@@ -68,6 +72,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <strong>Yggdrasil</strong>
           <span>나만의 지식 일기</span>
         </div>
+        <button
+          type="button"
+          className="theme-toggle"
+          aria-pressed={isDarkMode}
+          title={isDarkMode ? '라이트 모드로 전환' : '다크 모드로 전환'}
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggleTheme();
+          }}
+        >
+          <span />
+        </button>
       </div>
 
       <div className="sidebar-section">

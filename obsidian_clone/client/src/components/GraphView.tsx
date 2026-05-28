@@ -5,6 +5,7 @@ import { NoteTagIndexEntry, TagType, tagMeta } from '../utils/tagSearch';
 
 interface GraphViewProps {
   notes: NoteTagIndexEntry[];
+  isDarkMode?: boolean;
   onOpenNote: (path: string) => void;
 }
 
@@ -28,9 +29,12 @@ interface GraphLink {
 const graphTypes: TagType[] = ['topic', 'person', 'object'];
 
 const nodeColor = '#2D5A27';
+const darkNodeColor = '#F4F1DE';
 const tagNodeColor = '#A3C9A8';
 const fileNodeColor = '#F7F0E8';
+const darkFileNodeColor = '#DCEBD6';
 const labelColor = '#264653';
+const darkLabelColor = '#F4F1DE';
 const labelCache = new Map<string, THREE.Sprite>();
 
 const buildTreeGraph = (notes: NoteTagIndexEntry[], activeType: TagType) => {
@@ -113,21 +117,24 @@ const createTextSprite = (text: string, color = labelColor) => {
   return sprite.clone();
 };
 
-const createNodeObject = (node: GraphNode) => {
+const createNodeObject = (node: GraphNode, isDarkMode = false) => {
   const group = new THREE.Group();
+  const rootColor = isDarkMode ? darkNodeColor : nodeColor;
+  const leafColor = isDarkMode ? darkFileNodeColor : fileNodeColor;
+  const textColor = isDarkMode ? darkLabelColor : labelColor;
 
   if (node.type === 'root') {
     const core = new THREE.Mesh(
       new THREE.SphereGeometry(8.4, 36, 36),
       new THREE.MeshStandardMaterial({
-        color: nodeColor,
+        color: rootColor,
         roughness: 0.42,
         metalness: 0.02,
       }),
     );
     group.add(core);
 
-    const label = createTextSprite(node.label);
+    const label = createTextSprite(node.label, textColor);
     label.position.z = 16;
     group.add(label);
 
@@ -148,7 +155,7 @@ const createNodeObject = (node: GraphNode) => {
     );
     group.add(dot);
 
-    const label = createTextSprite(`${node.label} (${count})`);
+    const label = createTextSprite(`${node.label} (${count})`, textColor);
     label.position.z = radius + 7;
     group.add(label);
 
@@ -161,7 +168,7 @@ const createNodeObject = (node: GraphNode) => {
   const fileDot = new THREE.Mesh(
     new THREE.SphereGeometry(radius, 24, 24),
     new THREE.MeshStandardMaterial({
-      color: fileNodeColor,
+      color: leafColor,
       roughness: 0.56,
       metalness: 0.02,
     }),
@@ -171,7 +178,7 @@ const createNodeObject = (node: GraphNode) => {
   return group;
 };
 
-export const GraphView: React.FC<GraphViewProps> = ({ notes, onOpenNote }) => {
+export const GraphView: React.FC<GraphViewProps> = ({ notes, isDarkMode = false, onOpenNote }) => {
   const [activeType, setActiveType] = useState<TagType>('topic');
   const graphRef = useRef<any>(null);
   const graphData = useMemo(() => buildTreeGraph(notes, activeType), [activeType, notes]);
@@ -211,12 +218,12 @@ export const GraphView: React.FC<GraphViewProps> = ({ notes, onOpenNote }) => {
           <ForceGraph3D
             ref={graphRef}
             graphData={graphData}
-            backgroundColor="#F4F1DE"
+            backgroundColor={isDarkMode ? '#071918' : '#F4F1DE'}
             nodeLabel={(node: GraphNode) => node.type === 'tag' && node.count
               ? `${node.label} (${node.count})`
               : node.label}
-            nodeThreeObject={(node: GraphNode) => createNodeObject(node)}
-            linkColor={() => 'rgba(45, 90, 39, 0.34)'}
+            nodeThreeObject={(node: GraphNode) => createNodeObject(node, isDarkMode)}
+            linkColor={() => isDarkMode ? 'rgba(220, 235, 214, 0.46)' : 'rgba(45, 90, 39, 0.34)'}
             linkWidth={(link: GraphLink) => link.kind === 'root' ? 1.5 : 0.7}
             linkOpacity={0.62}
             cooldownTicks={180}
