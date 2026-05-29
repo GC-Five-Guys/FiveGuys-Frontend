@@ -1,6 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { BackendNoteSummary, getNotes } from '../api';
+import { BackendFolder, BackendNoteSummary, getFolders, getNotes } from '../api';
 import { FileNode, Tab } from '../types';
+
+const toFolderNode = (folder: BackendFolder): FileNode => ({
+  name: folder.name,
+  type: 'folder',
+  path: folder._id,
+  createdAt: folder.created_at,
+  children: (folder.children || []).map(toFolderNode),
+});
 
 const toFileNode = (note: BackendNoteSummary): FileNode => ({
   name: note.title,
@@ -12,6 +20,50 @@ const toFileNode = (note: BackendNoteSummary): FileNode => ({
   folderId: note.folder_id,
 });
 
+const buildTreeData = (folders: BackendFolder[], notes: BackendNoteSummary[]) => {
+  const tree = folders.map(toFolderNode);
+  const folderMap = new Map<string, FileNode>();
+
+  const collectFolders = (nodes: FileNode[]) => {
+    nodes.forEach((node) => {
+      if (node.type === 'folder') {
+        folderMap.set(node.path, node);
+        collectFolders(node.children || []);
+      }
+    });
+  };
+
+  collectFolders(tree);
+
+  notes.forEach((note) => {
+    const noteNode = toFileNode(note);
+    const parent = note.folder_id ? folderMap.get(note.folder_id) : null;
+
+    if (parent) {
+      parent.children = [...(parent.children || []), noteNode];
+    } else {
+      tree.push(noteNode);
+    }
+  });
+
+  return tree;
+};
+
+const findFileNode = (nodes: FileNode[], path: string): FileNode | null => {
+  for (const node of nodes) {
+    if (node.type === 'file' && node.path === path) {
+      return node;
+    }
+
+    if (node.children) {
+      const found = findFileNode(node.children, path);
+      if (found) return found;
+    }
+  }
+
+  return null;
+};
+
 export function useNotes() {
   const [treeData, setTreeData] = useState<FileNode[]>([]);
   const [openTabs, setOpenTabs] = useState<Tab[]>([]);
@@ -21,8 +73,11 @@ export function useNotes() {
 
   const refreshNoteList = useCallback(async () => {
     try {
-      const notes = await getNotes();
-      const data = notes.map(toFileNode);
+      const [folderResponse, notes] = await Promise.all([
+        getFolders(),
+        getNotes(),
+      ]);
+      const data = buildTreeData(folderResponse.tree, notes);
       setTreeData(data);
 
       const allFiles: { name: string; path: string }[] = [];
@@ -43,7 +98,7 @@ export function useNotes() {
   }, []);
 
   const openNote = useCallback(async (path: string) => {
-    const note = treeData.find((node) => node.type === 'file' && node.path === path);
+    const note = findFileNode(treeData, path);
     const name = note?.name || "";
     setOpenTabs((prev) => {
       if (!prev.find((t) => t.path === path)) {

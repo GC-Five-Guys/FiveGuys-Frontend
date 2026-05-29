@@ -8,7 +8,16 @@ import { StatusBar } from './components/StatusBar';
 import { RightSidebar } from './components/RightSidebar';
 import { TagSearchResultsView } from './components/TagSearchResultsView';
 import { GraphView } from './components/GraphView';
-import { ApiError, createNote, deleteNote, getAuthToken, updateNote } from './api';
+import {
+  ApiError,
+  createFolder,
+  createNote,
+  deleteFolder,
+  deleteNote,
+  getAuthToken,
+  updateNote,
+  updateNotePartial,
+} from './api';
 import {
   countTopTags,
   fetchNoteTagIndex,
@@ -124,6 +133,24 @@ function MainApp() {
   const currentNote = useMemo(() => (
     flattenFiles(treeData).find((file) => file.path === currentPath)
   ), [currentPath, treeData]);
+  const selectedFolder = useMemo(() => {
+    const findFolder = (nodes: FileNode[]): FileNode | null => {
+      for (const node of nodes) {
+        if (node.type === 'folder' && node.path === selectedFolderPath) {
+          return node;
+        }
+
+        if (node.children) {
+          const found = findFolder(node.children);
+          if (found) return found;
+        }
+      }
+
+      return null;
+    };
+
+    return selectedFolderPath ? findFolder(treeData) : null;
+  }, [selectedFolderPath, treeData]);
 
   const saveNote = async (content: string) => {
     if (!currentPath) return;
@@ -142,7 +169,9 @@ function MainApp() {
   };
 
   const handleCreateNote = async () => {
-    const title = prompt('생성할 일기 제목을 입력하세요:');
+    const title = prompt(selectedFolder
+      ? `'${selectedFolder.name}' 폴더에 생성할 일기 제목을 입력하세요:`
+      : '생성할 일기 제목을 입력하세요:');
     if (!title) return;
 
     try {
@@ -151,6 +180,11 @@ function MainApp() {
         title,
         content: '',
       });
+
+      if (selectedFolderPath) {
+        await updateNotePartial(note._id, { folder_id: selectedFolderPath });
+      }
+
       await refreshNoteList();
       openNote(note._id);
     } catch (error) {
@@ -167,13 +201,16 @@ function MainApp() {
     const folderName = prompt('생성할 폴더 이름을 입력하세요:');
     if (!folderName) return;
     try {
-      const response = await fetch('/api/folders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ folderName })
+      await createFolder({
+        name: folderName,
+        parent_id: selectedFolderPath || null,
+        order: 0,
       });
-      if (response.ok) await refreshNoteList();
-    } catch (error) { console.error(error); }
+      await refreshNoteList();
+    } catch (error) {
+      console.error(error);
+      alert('폴더 생성에 실패했습니다.');
+    }
   };
 
   const handleDelete = async (path: string, type: 'file' | 'folder', name: string) => {
@@ -191,12 +228,15 @@ function MainApp() {
         return;
       }
 
-      const response = await fetch(`/api/notes/${encodeURIComponent(path)}`, { method: 'DELETE' });
-      if (response.ok) {
-        if (selectedFolderPath === path) setSelectedFolderPath("");
-        await refreshNoteList();
+      await deleteFolder(path);
+      if (selectedFolderPath === path) {
+        setSelectedFolderPath("");
       }
-    } catch (error) { console.error(error); }
+      await refreshNoteList();
+    } catch (error) {
+      console.error(error);
+      alert(type === 'folder' ? '폴더 삭제에 실패했습니다.' : '일기 삭제에 실패했습니다.');
+    }
   };
 
   const handleOpenTagResult = (path: string) => {

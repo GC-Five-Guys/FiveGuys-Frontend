@@ -30,6 +30,11 @@ export interface UpdateNoteRequest {
   content: string;
 }
 
+export interface UpdateNotePartialRequest {
+  folder_id?: string | null;
+  is_public?: boolean;
+}
+
 export const getNotes = () => (
   apiRequest<BackendNoteSummary[]>('/notes')
 );
@@ -48,6 +53,13 @@ export const createNote = (input: CreateNoteRequest) => (
 export const updateNote = (id: string, input: UpdateNoteRequest) => (
   apiRequest<BackendNote>(`/notes/${id}`, {
     method: 'PUT',
+    body: input,
+  })
+);
+
+export const updateNotePartial = (id: string, input: UpdateNotePartialRequest) => (
+  apiRequest<BackendNote>(`/notes/${id}`, {
+    method: 'PATCH',
     body: input,
   })
 );
