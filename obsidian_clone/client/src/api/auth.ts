@@ -2,8 +2,8 @@ import { apiRequest } from './client';
 import { setAuthToken } from './tokenStorage';
 
 export interface AuthUser {
-  _id: string;
-  username: string;
+  _id?: string;
+  username?: string;
   email: string;
   display_name?: string;
 }

@@ -8,6 +8,7 @@ import { StatusBar } from './components/StatusBar';
 import { RightSidebar } from './components/RightSidebar';
 import { TagSearchResultsView } from './components/TagSearchResultsView';
 import { GraphView } from './components/GraphView';
+import { getAuthToken } from './api';
 import {
   countTopTags,
   fetchNoteTagIndex,
@@ -349,7 +350,7 @@ function MainApp() {
 
 function App() {
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(getAuthToken()));
 
   if (!isLoggedIn) {
 
