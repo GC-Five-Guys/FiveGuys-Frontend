@@ -1,4 +1,4 @@
-import { getNote } from '../api';
+import { BackendNote, getNote } from '../api';
 import { FileNode } from '../types';
 
 export type TagType = 'topic' | 'person' | 'object';
@@ -31,6 +31,12 @@ const markerToType: Record<string, TagType> = {
   '#': 'topic',
   '@': 'person',
   '&': 'object',
+};
+
+const nodeTokenToTagType: Record<string, TagType> = {
+  tag: 'topic',
+  mention: 'person',
+  object: 'object',
 };
 
 const dataTypeToTagType: Record<string, TagType> = {
@@ -102,6 +108,21 @@ export const extractTagsFromHtml = (html: string) => {
 
 export const uniqueTags = (tags: string[]) => Array.from(new Set(tags));
 
+export const extractTagsFromNodes = (nodes: BackendNote['nodes'] = []) => {
+  const tags = emptyTags();
+
+  nodes.forEach((node) => {
+    const tagType = nodeTokenToTagType[node.token_type];
+    const label = normalizeTagLabel(node.label);
+
+    if (tagType && label) {
+      tags[tagType].push(label);
+    }
+  });
+
+  return tags;
+};
+
 export const makeSnippet = (html: string, label: string) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
@@ -149,7 +170,8 @@ export const fetchNoteTagIndex = async (treeData: FileNode[]): Promise<NoteTagIn
   const entries = await Promise.all(files.map(async (file) => {
     const data = await getNote(file.path);
     const content = data.content || '';
-    const tags = extractTagsFromHtml(content);
+    const nodeTags = extractTagsFromNodes(data.nodes);
+    const tags = data.nodes?.length ? nodeTags : extractTagsFromHtml(content);
 
     return {
       path: file.path,
