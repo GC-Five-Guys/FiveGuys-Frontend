@@ -108,7 +108,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = ({
             <button
               key={type}
               type="button"
-              className={selectedTagType === type ? 'active' : ''}
+              className={`${type} ${selectedTagType === type ? 'active' : ''}`}
               onClick={() => onTagTypeChange(type)}
             >
               {tagMeta[type].marker}

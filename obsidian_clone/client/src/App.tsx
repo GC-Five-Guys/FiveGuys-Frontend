@@ -53,6 +53,7 @@ function MainApp() {
   const [selectedFolderPath, setSelectedFolderPath] = useState<string>("");
   const [activeView, setActiveView] = useState<'file' | 'graph'>('file');
   const [showSettings, setShowSettings] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [tagIndex, setTagIndex] = useState<NoteTagIndexEntry[]>([]);
   const [selectedTagType, setSelectedTagType] = useState<TagType>('topic');
   const [tagSearchQuery, setTagSearchQuery] = useState('');
@@ -224,7 +225,7 @@ function MainApp() {
   };
 
   return (
-    <div id="app-container" onClick={() => setShowSettings(false)}>
+    <div id="app-container" data-theme={isDarkMode ? 'dark' : 'light'} onClick={() => setShowSettings(false)}>
       {/* [Pane 1] 세로 메뉴바 */}
       <nav id="vertical-menu">
         <div className="menu-top">
@@ -262,6 +263,8 @@ function MainApp() {
         handleCreateNote={handleCreateNote}
         handleCreateFolder={handleCreateFolder}
         handleDelete={handleDelete}
+        isDarkMode={isDarkMode}
+        onToggleTheme={() => setIsDarkMode((current) => !current)}
       />
 
       {activeView === 'file' ? (
@@ -306,6 +309,7 @@ function MainApp() {
         <main id="main-content">
           <GraphView
             notes={tagIndex}
+            isDarkMode={isDarkMode}
             onOpenNote={(path) => {
               openNote(path);
               setActiveView('file');
