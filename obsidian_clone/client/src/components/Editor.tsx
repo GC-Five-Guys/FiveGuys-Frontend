@@ -5,11 +5,13 @@ import Mention from '@tiptap/extension-mention';
 import Placeholder from '@tiptap/extension-placeholder';
 import tippy, { Instance } from 'tippy.js';
 import 'tippy.js/dist/tippy.css'; 
+import { getNote } from '../api';
 import { TagSuggestionList } from './TagSuggestionList';
 import { TagSummaryTable } from './TagSummaryTable';
 
 interface EditorProps {
   currentPath: string;
+  title?: string;
   onSave: (content: string) => void;
   setSaveStatus: (status: string) => void;
 }
@@ -124,6 +126,7 @@ const createSuggestionConfig = (type: 'person' | 'topic' | 'object', char: strin
 
 export const Editor: React.FC<EditorProps> = ({
   currentPath,
+  title = '',
   onSave,
   setSaveStatus,
 }) => {
@@ -243,10 +246,9 @@ export const Editor: React.FC<EditorProps> = ({
   // Load content when currentPath changes
   useEffect(() => {
     if (editor && currentPath) {
-      fetch(`/api/notes/${encodeURIComponent(currentPath)}`)
-        .then(res => res.json())
-        .then(data => {
-          editor.commands.setContent(data.content || '');
+      getNote(currentPath)
+        .then((data) => {
+          editor.commands.setContent(data.content || '', { emitUpdate: false });
           // Extract initial tags
           setTags(extractTags(editor.getJSON()));
           setSaveStatus("저장됨 ✓");
@@ -267,7 +269,7 @@ export const Editor: React.FC<EditorProps> = ({
           id="viewer-title"
           placeholder="제목 없는 일기"
           disabled={!currentPath}
-          value={currentPath.split('/').pop()?.replace('.md', '') || ""}
+          value={title}
           readOnly
         />
       </div>

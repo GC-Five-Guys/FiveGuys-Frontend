@@ -28,6 +28,10 @@ const toDateKey = (date: Date) => {
 };
 
 const getFileDateKey = (file: FileNode) => {
+  if (file.date) {
+    return file.date;
+  }
+
   const fileDate = file.name.match(/^(\d{4}-\d{2}-\d{2})\.md$/);
   if (fileDate) {
     return fileDate[1];
@@ -116,6 +120,10 @@ function MainApp() {
     setActiveView('file');
     setActiveTagSearch({ type, query: normalizedQuery });
   }, [selectedTagType, tagSearchQuery]);
+
+  const currentNote = useMemo(() => (
+    flattenFiles(treeData).find((file) => file.path === currentPath)
+  ), [currentPath, treeData]);
 
   const saveNote = async (content: string) => {
     if (!currentPath) return;
@@ -288,6 +296,7 @@ function MainApp() {
               ) : (
               <Editor
                 currentPath={currentPath}
+                title={currentNote?.name || ''}
                 onSave={saveNote}
                 setSaveStatus={setSaveStatus}
               />
