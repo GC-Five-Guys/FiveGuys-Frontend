@@ -15,6 +15,7 @@ import {
   deleteFolder,
   deleteNote,
   getAuthToken,
+  search,
   updateNote,
   updateNotePartial,
 } from './api';
@@ -25,7 +26,9 @@ import {
   makeSnippet,
   normalizeTagLabel,
   NoteTagIndexEntry,
+  NoteTagSearchResult,
   TagType,
+  tagMeta,
 } from './utils/tagSearch';
 import { FileNode } from './types';
 
@@ -69,6 +72,7 @@ function MainApp() {
   const [showSettings, setShowSettings] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [tagIndex, setTagIndex] = useState<NoteTagIndexEntry[]>([]);
+  const [tagSearchResults, setTagSearchResults] = useState<NoteTagSearchResult[]>([]);
   const [selectedTagType, setSelectedTagType] = useState<TagType>('topic');
   const [tagSearchQuery, setTagSearchQuery] = useState('');
   const [activeTagSearch, setActiveTagSearch] = useState<{ type: TagType; query: string } | null>(null);
@@ -104,31 +108,49 @@ function MainApp() {
       }))
   ), [treeData]);
 
-  const tagSearchResults = useMemo(() => {
-    if (!activeTagSearch) return [];
-
-    return tagIndex
-      .filter((note) => note.tags[activeTagSearch.type].includes(activeTagSearch.query))
-      .map((note) => ({
-        path: note.path,
-        title: note.title,
-        tags: note.tags,
-        snippet: makeSnippet(note.content, activeTagSearch.query),
-      }));
-  }, [activeTagSearch, tagIndex]);
-
-  const runTagSearch = useCallback((type = selectedTagType, query = tagSearchQuery) => {
+  const runTagSearch = useCallback(async (type = selectedTagType, query = tagSearchQuery) => {
     const normalizedQuery = normalizeTagLabel(query);
     if (!normalizedQuery) {
       setActiveTagSearch(null);
+      setTagSearchResults([]);
       return;
     }
 
-    setSelectedTagType(type);
-    setTagSearchQuery(normalizedQuery);
-    setActiveView('file');
-    setActiveTagSearch({ type, query: normalizedQuery });
-  }, [selectedTagType, tagSearchQuery]);
+    try {
+      const response = await search({
+        q: normalizedQuery,
+        type: tagMeta[type].marker,
+      });
+      const fallbackResults = tagIndex
+        .filter((note) => note.tags[type].includes(normalizedQuery))
+        .map((note) => ({
+          path: note.path,
+          title: note.title,
+          tags: note.tags,
+          snippet: makeSnippet(note.content, normalizedQuery),
+        }));
+      const fallbackMap = new Map(fallbackResults.map((result) => [result.path, result]));
+      const nextResults = response.notes.map((note) => (
+        fallbackMap.get(note._id) || {
+          path: note._id,
+          title: note.title,
+          tags: { topic: [], person: [], object: [] },
+          snippet: '본문 미리보기가 없습니다.',
+        }
+      ));
+
+      setTagSearchResults(nextResults);
+      setSelectedTagType(type);
+      setTagSearchQuery(normalizedQuery);
+      setActiveView('file');
+      setActiveTagSearch({ type, query: normalizedQuery });
+    } catch (error) {
+      console.error('Tag search failed:', error);
+      setTagSearchResults([]);
+      setActiveView('file');
+      setActiveTagSearch({ type, query: normalizedQuery });
+    }
+  }, [selectedTagType, tagSearchQuery, tagIndex]);
 
   const currentNote = useMemo(() => (
     flattenFiles(treeData).find((file) => file.path === currentPath)
