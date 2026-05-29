@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ApiError, login } from "../api";
 import loginBg from "../assets/yggdrasil_background_exact.svg";
 import appIcon from "../assets/yggdrasil_icon_transparent.svg";
 
@@ -45,11 +46,28 @@ function EyeOffIcon() {
 
 function LoginPage({ onLogin }: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleLogin = (event: { preventDefault: () => void }) => {
+  const handleLogin = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    console.log("login clicked");
-    onLogin?.();
+    setErrorMessage("");
+    setIsSubmitting(true);
+
+    try {
+      await login({ email, password });
+      onLogin?.();
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        setErrorMessage("이메일 또는 비밀번호를 확인해 주세요.");
+      } else {
+        setErrorMessage("로그인 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -69,14 +87,18 @@ function LoginPage({ onLogin }: LoginPageProps) {
         <h1 className="login-title">Yggdrasil</h1>
 
         <form className="login-form" onSubmit={handleLogin}>
-          <label className="login-label" htmlFor="userId">아이디</label>
+          <label className="login-label" htmlFor="email">이메일</label>
           <div className="login-input-wrap">
             <span className="login-input-icon"><UserIcon /></span>
             <input
-              id="userId"
-              type="text"
-              placeholder="아이디를 입력하세요"
+              id="email"
+              type="email"
+              placeholder="이메일을 입력하세요"
               autoComplete="username"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              disabled={isSubmitting}
+              required
             />
           </div>
 
@@ -88,18 +110,29 @@ function LoginPage({ onLogin }: LoginPageProps) {
               type={showPassword ? "text" : "password"}
               placeholder="비밀번호를 입력하세요"
               autoComplete="current-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              disabled={isSubmitting}
+              required
             />
             <button
               className="password-toggle"
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
               aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
+              disabled={isSubmitting}
             >
               {showPassword ? <EyeOffIcon /> : <EyeIcon />}
             </button>
           </div>
 
-          <button className="login-button" type="submit">로그인</button>
+          {errorMessage && (
+            <p className="login-error" role="alert">{errorMessage}</p>
+          )}
+
+          <button className="login-button" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "로그인 중..." : "로그인"}
+          </button>
         </form>
 
         <p className="signup-text">
