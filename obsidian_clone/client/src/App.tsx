@@ -8,7 +8,7 @@ import { StatusBar } from './components/StatusBar';
 import { RightSidebar } from './components/RightSidebar';
 import { TagSearchResultsView } from './components/TagSearchResultsView';
 import { GraphView } from './components/GraphView';
-import { getAuthToken } from './api';
+import { ApiError, createNote, deleteNote, getAuthToken, updateNote } from './api';
 import {
   countTopTags,
   fetchNoteTagIndex,
@@ -129,39 +129,38 @@ function MainApp() {
     if (!currentPath) return;
 
     try {
-      const response = await fetch(`/api/notes/${encodeURIComponent(currentPath)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: content })
+      await updateNote(currentPath, {
+        title: currentNote?.name || '제목 없는 일기',
+        content,
       });
-
-      if (response.ok) {
-        setSaveStatus("저장됨 ✓");
-        loadTagIndex();
-      }
+      setSaveStatus("저장됨 ✓");
+      loadTagIndex();
     } catch (error) {
       console.error('Save failed:', error);
+      setSaveStatus("저장 실패");
     }
   };
 
   const handleCreateNote = async () => {
-    const fileName = prompt(selectedFolderPath ? `'${selectedFolderPath}' 폴더에 생성할 일기 제목을 입력하세요:` : '생성할 일기 제목을 입력하세요:');
-    if (!fileName) return;
-
-    const fullFileName = selectedFolderPath ? `${selectedFolderPath}/${fileName}` : fileName;
+    const title = prompt('생성할 일기 제목을 입력하세요:');
+    if (!title) return;
 
     try {
-      const response = await fetch('/api/notes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileName: fullFileName }),
+      const note = await createNote({
+        date: toDateKey(new Date()),
+        title,
+        content: '',
       });
-      if (response.ok) {
-        const data = await response.json();
-        await refreshNoteList();
-        openNote(data.fileName);
+      await refreshNoteList();
+      openNote(note._id);
+    } catch (error) {
+      console.error(error);
+      if (error instanceof ApiError && error.status === 409) {
+        alert('이미 오늘 작성된 일기가 있습니다.');
+      } else {
+        alert('일기 생성에 실패했습니다.');
       }
-    } catch (error) { console.error(error); }
+    }
   };
 
   const handleCreateFolder = async () => {
@@ -185,10 +184,16 @@ function MainApp() {
     if (!confirm(msg)) return;
 
     try {
+      if (type === 'file') {
+        await deleteNote(path);
+        closeTab(path);
+        await refreshNoteList();
+        return;
+      }
+
       const response = await fetch(`/api/notes/${encodeURIComponent(path)}`, { method: 'DELETE' });
       if (response.ok) {
-        if (type === 'folder' && selectedFolderPath === path) setSelectedFolderPath("");
-        if (type === 'file') closeTab(path);
+        if (selectedFolderPath === path) setSelectedFolderPath("");
         await refreshNoteList();
       }
     } catch (error) { console.error(error); }
@@ -213,23 +218,20 @@ function MainApp() {
     if (!confirm(`${dateKey} 일기를 생성할까요?`)) return;
 
     try {
-      const response = await fetch('/api/notes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileName: `${dateKey}.md` }),
+      const note = await createNote({
+        date: dateKey,
+        title: dateKey,
+        content: '',
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        await refreshNoteList();
-        openNote(data.fileName);
-      } else {
-        alert('이미 해당 날짜의 일기가 있거나 파일을 만들 수 없습니다.');
-        await refreshNoteList();
-      }
+      await refreshNoteList();
+      openNote(note._id);
     } catch (error) {
       console.error(error);
-      alert('일기 파일을 생성하지 못했습니다.');
+      if (error instanceof ApiError && error.status === 409) {
+        alert('이미 해당 날짜의 일기가 있습니다.');
+      } else {
+        alert('일기를 생성하지 못했습니다.');
+      }
     }
   };
 
