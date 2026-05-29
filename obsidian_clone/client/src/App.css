@@ -17,9 +17,9 @@
     --object-text: #F87171;
 
     --pane1-width: 60px;
-    --pane2-width: 240px;
-    --pane4-width: 300px;
-    --status-height: 28px;
+    --pane2-width: 252px;
+    --pane4-width: 316px;
+    --status-height: 30px;
 }
 
 * { 
@@ -281,15 +281,15 @@ body {
     min-width: 120px;
 }
 .summary-tag {
-    font-size: 0.8rem;
-    padding: 2px 6px;
+    font-size: 1.12rem;
+    padding: 3px 8px;
     border-radius: 4px;
     font-weight: 500;
     white-space: nowrap;
 }
 .summary-tag-form {
     width: 200px;
-    height: 30px;
+    height: 38px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -299,7 +299,7 @@ body {
     background: var(--bg-primary);
 }
 .summary-tag-prefix {
-    width: 28px;
+    width: 36px;
     flex-shrink: 0;
     text-align: center;
     font-family: "JetBrains Mono", monospace;
@@ -317,10 +317,10 @@ body {
     outline: none;
     color: var(--text-primary);
     background: transparent;
-    font-size: 0.8rem;
+    font-size: 1.12rem;
 }
 .summary-tag-form button {
-    width: 30px;
+    width: 38px;
     height: 100%;
     flex-shrink: 0;
     border: none;
@@ -335,9 +335,29 @@ body {
     background: rgba(255, 255, 255, 0.08);
     color: var(--text-primary);
 }
-.summary-tag.person { background: var(--mention-bg); color: var(--mention-text); }
-.summary-tag.topic { background: var(--tag-bg); color: var(--tag-text); }
-.summary-tag.object { background: var(--object-bg); color: var(--object-text); }
+.summary-tag.person,
+.mention-node.person,
+.tag.person {
+    background: var(--mention-bg);
+    color: var(--mention-text);
+    box-shadow: inset 0 0 0 1px rgba(31, 101, 130, 0.45);
+}
+
+.summary-tag.topic,
+.mention-node.topic,
+.tag.topic {
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    box-shadow: inset 0 0 0 1px rgba(36, 91, 50, 0.45);
+}
+
+.summary-tag.object,
+.mention-node.object,
+.tag.object {
+    background: var(--object-bg);
+    color: var(--object-text);
+    box-shadow: inset 0 0 0 1px rgba(127, 72, 24, 0.48);
+}
 .person-header { color: var(--mention-text) !important; }
 .topic-header { color: var(--tag-text) !important; }
 .object-header { color: var(--object-text) !important; }
@@ -362,14 +382,10 @@ body {
 /* Tag Styles in Editor */
 .mention-node {
     border-radius: 4px;
-    padding: 1px 4px;
-    font-weight: 500;
+    padding: 2px 6px;
+    font-weight: 700;
     text-decoration: none;
 }
-.mention-node.person { background: var(--mention-bg); color: var(--mention-text); }
-.mention-node.topic { background: var(--tag-bg); color: var(--tag-text); }
-.mention-node.object { background: var(--object-bg); color: var(--object-text); }
-
 /* [Pane 4] 우측바 */
 #right-sidebar {
     width: var(--pane4-width);
@@ -473,18 +489,19 @@ body {
 .tag-group h5 { font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 8px; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag {
-    font-size: 0.8rem;
+    font-size: 0.86rem;
     background: rgba(255, 255, 255, 0.05);
     border: none;
-    padding: 4px 8px;
-    border-radius: 4px;
+    padding: 5px 9px;
+    border-radius: 999px;
     cursor: pointer;
     color: var(--text-secondary);
+    font-weight: 700;
+    line-height: 1.25;
 }
-.tag:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
-.tag.topic { color: var(--tag-text); }
-.tag.person { color: var(--mention-text); }
-.tag.object { color: var(--object-text); }
+.tag:hover {
+    filter: saturate(1.08) brightness(0.98);
+}
 
 /* Tag Search Results */
 #tag-results-view {
@@ -564,6 +581,7 @@ body {
 .tag-result-title {
     color: var(--text-primary);
     font-weight: 700;
+    font-size: 1rem;
 }
 
 .tag-result-tags {
@@ -573,9 +591,9 @@ body {
 }
 
 .tag-result-snippet {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    line-height: 1.5;
+    color: var(--text-primary);
+    font-size: 0.96rem;
+    line-height: 1.6;
 }
 
 .tag-result-empty {
@@ -892,17 +910,17 @@ body {
     --bg-primary: #f4f1de;
     --bg-secondary: rgba(255, 255, 255, 0.72);
     --bg-menu: #1f4d23;
-    --text-primary: #26372d;
-    --text-secondary: rgba(38, 55, 45, 0.62);
+    --text-primary: #1f2f27;
+    --text-secondary: rgba(31, 47, 39, 0.72);
     --border: rgba(45, 90, 39, 0.16);
     --accent: #2d5a27;
 
-    --mention-bg: rgba(45, 90, 39, 0.12);
-    --mention-text: #2d5a27;
-    --tag-bg: rgba(163, 201, 168, 0.32);
-    --tag-text: #2f683f;
-    --object-bg: rgba(212, 163, 115, 0.22);
-    --object-text: #9b5f1f;
+    --mention-bg: rgba(56, 130, 160, 0.2);
+    --mention-text: #1f6582;
+    --tag-bg: rgba(163, 201, 168, 0.42);
+    --tag-text: #245b32;
+    --object-bg: rgba(212, 163, 115, 0.3);
+    --object-text: #7f4818;
 
     --surface-paper: rgba(255, 253, 245, 0.86);
     --surface-soft: rgba(250, 250, 247, 0.74);
@@ -933,8 +951,8 @@ body {
 }
 
 .menu-item {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: 12px;
     color: rgba(255, 253, 245, 0.68);
 }
@@ -955,11 +973,11 @@ body {
 }
 
 #file-sidebar {
-    padding: 20px 10px;
+    padding: 22px 12px;
 }
 
 #right-sidebar {
-    padding: 22px;
+    padding: 24px;
 }
 
 .app-brand {
@@ -972,8 +990,8 @@ body {
 }
 
 .app-brand img {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     flex-shrink: 0;
     border-radius: 12px;
     box-shadow: 0 8px 18px rgba(37, 90, 39, 0.18);
@@ -989,22 +1007,22 @@ body {
 .app-brand strong {
     color: var(--accent);
     font-family: "Noto Serif KR", Lora, Georgia, serif;
-    font-size: 1.18rem;
+    font-size: 1.34rem;
     line-height: 1.1;
     white-space: nowrap;
 }
 
 .app-brand span {
     color: var(--text-secondary);
-    font-size: 0.72rem;
+    font-size: 0.82rem;
     line-height: 1.2;
     white-space: nowrap;
 }
 
 .theme-toggle {
     position: relative;
-    width: 38px;
-    height: 22px;
+    width: 40px;
+    height: 24px;
     flex-shrink: 0;
     border: 1px solid rgba(45, 90, 39, 0.18);
     border-radius: 999px;
@@ -1018,8 +1036,8 @@ body {
     position: absolute;
     top: 3px;
     left: 3px;
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background: linear-gradient(145deg, #2d5a27, #3d7a35);
     box-shadow: 0 2px 6px rgba(30, 50, 35, 0.18);
@@ -1040,6 +1058,7 @@ body {
 .tags-section h4,
 .calendar-section h4 {
     color: var(--accent);
+    font-size: 0.94rem;
     font-weight: 800;
     letter-spacing: 0.04em;
 }
@@ -1060,11 +1079,12 @@ body {
 }
 
 .tree-row {
-    min-height: 34px;
+    min-height: 37px;
     margin: 2px 0;
-    padding: 7px 10px;
+    padding: 8px 11px;
     border-radius: 10px;
     color: var(--text-secondary);
+    font-size: 1.04rem;
     transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
 
@@ -1092,8 +1112,8 @@ body {
 }
 
 #tab-bar {
-    height: 48px;
-    padding: 8px 14px 0;
+    height: 52px;
+    padding: 9px 15px 0;
     background: rgba(255, 253, 245, 0.68);
     border-bottom: 1px solid var(--border);
     backdrop-filter: blur(14px);
@@ -1104,12 +1124,13 @@ body {
 }
 
 .tab {
-    min-height: 36px;
-    padding: 7px 14px;
+    min-height: 39px;
+    padding: 8px 15px;
     border: 1px solid var(--border);
     border-radius: 12px 12px 0 0;
     background: rgba(255, 255, 255, 0.54);
     color: var(--text-secondary);
+    font-size: 0.98rem;
     box-shadow: var(--shadow-sm);
 }
 
@@ -1126,6 +1147,7 @@ body {
 #viewer-title {
     font-family: "Noto Serif KR", Lora, Georgia, serif;
     color: var(--accent);
+    font-size: 2.82rem;
 }
 
 #editor-container {
@@ -1134,6 +1156,9 @@ body {
 
 .ProseMirror {
     color: var(--text-primary);
+    font-size: 1.24rem;
+    line-height: 1.76;
+    font-weight: 450;
 }
 
 .ProseMirror p.is-editor-empty:first-child::before {
@@ -1160,11 +1185,14 @@ body {
 .tag-summary-table th {
     background: rgba(163, 201, 168, 0.14);
     color: var(--text-secondary);
+    font-size: 1.12rem;
 }
 
 .summary-tag,
 .mention-node {
     border-radius: 999px;
+    font-weight: 700;
+    box-shadow: inset 0 0 0 1px currentColor;
 }
 
 .summary-tag-form,
@@ -1178,6 +1206,19 @@ body {
 .summary-tag-form,
 .tag-search-form {
     border-radius: 12px;
+}
+
+.tag-search-form {
+    height: 40px;
+}
+
+.tag-search-form input {
+    font-size: 0.98rem;
+}
+
+.tag-search-form button {
+    width: 58px;
+    font-size: 0.88rem;
 }
 
 .summary-tag-form:focus-within,
@@ -1203,10 +1244,14 @@ body {
     background: rgba(255, 255, 255, 0.52);
     border: 1px solid var(--border);
     border-radius: 14px;
+    gap: 5px;
+    padding: 4px;
 }
 
 .tag-type-toggle button {
+    height: 34px;
     border-radius: 10px;
+    font-size: 1.04rem;
 }
 
 .tag-type-toggle button:hover,
@@ -1267,6 +1312,7 @@ body {
 .graph-toolbar h2 {
     color: var(--accent);
     font-family: "Noto Serif KR", Lora, Georgia, serif;
+    font-size: 1.46rem;
 }
 
 .graph-type-toggle button {
@@ -1274,6 +1320,8 @@ body {
     border: 1px solid var(--border);
     border-radius: 12px;
     color: var(--text-secondary);
+    height: 36px;
+    font-size: 0.96rem;
 }
 
 .graph-type-toggle button:hover,
@@ -1303,6 +1351,7 @@ body {
 .calendar-table button {
     border-radius: 10px;
     color: var(--text-secondary);
+    font-size: 0.92rem;
 }
 
 .calendar-table button:hover {
@@ -1329,6 +1378,7 @@ body {
     right: 0;
     bottom: 0;
     z-index: 80;
+    font-size: 0.84rem;
 }
 
 .suggestion-item {
@@ -1377,12 +1427,12 @@ body {
     --border: rgba(244, 241, 222, 0.14);
     --accent: #a3c9a8;
 
-    --mention-bg: rgba(163, 201, 168, 0.16);
-    --mention-text: #a3c9a8;
-    --tag-bg: rgba(45, 90, 39, 0.34);
-    --tag-text: #b9d8bd;
-    --object-bg: rgba(212, 163, 115, 0.2);
-    --object-text: #e0b06e;
+    --mention-bg: rgba(82, 163, 194, 0.46);
+    --mention-text: #a8e2f2;
+    --tag-bg: rgba(163, 201, 168, 0.44);
+    --tag-text: #d0ead2;
+    --object-bg: rgba(212, 163, 115, 0.46);
+    --object-text: #ffd196;
 
     --surface-paper: rgba(12, 31, 30, 0.86);
     --surface-soft: rgba(38, 70, 83, 0.38);
@@ -1454,6 +1504,24 @@ body {
     background: rgba(163, 201, 168, 0.08);
 }
 
+#app-container[data-theme="dark"] .summary-tag.person,
+#app-container[data-theme="dark"] .mention-node.person,
+#app-container[data-theme="dark"] .tag.person {
+    box-shadow: inset 0 0 0 1px rgba(168, 226, 242, 0.72);
+}
+
+#app-container[data-theme="dark"] .summary-tag.topic,
+#app-container[data-theme="dark"] .mention-node.topic,
+#app-container[data-theme="dark"] .tag.topic {
+    box-shadow: inset 0 0 0 1px rgba(208, 234, 210, 0.7);
+}
+
+#app-container[data-theme="dark"] .summary-tag.object,
+#app-container[data-theme="dark"] .mention-node.object,
+#app-container[data-theme="dark"] .tag.object {
+    box-shadow: inset 0 0 0 1px rgba(255, 209, 150, 0.72);
+}
+
 #app-container[data-theme="dark"] .calendar-picker {
     background: #102425;
 }
@@ -1465,6 +1533,44 @@ body {
 #app-container[data-theme="dark"] .tag-type-toggle button:hover,
 #app-container[data-theme="dark"] .tag-type-toggle button.active {
     background: linear-gradient(180deg, #a3c9a8 0%, #6f9e68 100%);
+    color: #071918;
+}
+
+#app-container[data-theme="dark"] .tag-type-toggle {
+    background: rgba(7, 25, 24, 0.74);
+    border-color: rgba(244, 241, 222, 0.16);
+}
+
+#app-container[data-theme="dark"] .tag-type-toggle button.topic {
+    background: rgba(163, 201, 168, 0.22);
+    color: #d0ead2;
+}
+
+#app-container[data-theme="dark"] .tag-type-toggle button.person {
+    background: rgba(82, 163, 194, 0.24);
+    color: #a8e2f2;
+}
+
+#app-container[data-theme="dark"] .tag-type-toggle button.object {
+    background: rgba(212, 163, 115, 0.24);
+    color: #ffd196;
+}
+
+#app-container[data-theme="dark"] .tag-type-toggle button.topic:hover,
+#app-container[data-theme="dark"] .tag-type-toggle button.topic.active {
+    background: linear-gradient(180deg, rgba(163, 201, 168, 0.82), rgba(79, 122, 74, 0.9));
+    color: #071918;
+}
+
+#app-container[data-theme="dark"] .tag-type-toggle button.person:hover,
+#app-container[data-theme="dark"] .tag-type-toggle button.person.active {
+    background: linear-gradient(180deg, rgba(143, 208, 228, 0.86), rgba(31, 101, 130, 0.9));
+    color: #071918;
+}
+
+#app-container[data-theme="dark"] .tag-type-toggle button.object:hover,
+#app-container[data-theme="dark"] .tag-type-toggle button.object.active {
+    background: linear-gradient(180deg, rgba(255, 209, 150, 0.9), rgba(127, 72, 24, 0.92));
     color: #071918;
 }
 
