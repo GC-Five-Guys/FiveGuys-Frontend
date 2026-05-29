@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ApiError, login } from "../api";
+import { ApiError, login, signup } from "../api";
 import loginBg from "../assets/yggdrasil_background_exact.svg";
 import appIcon from "../assets/yggdrasil_icon_transparent.svg";
 
@@ -84,8 +84,28 @@ function LoginPage({ onLogin }: LoginPageProps) {
     }
   };
 
-  const handleSignup = (event: { preventDefault: () => void }) => {
+  const handleSignup = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
+    setErrorMessage("");
+    setIsSubmitting(true);
+
+    try {
+      await signup({
+        username: signupUsername,
+        email: signupEmail,
+        password: signupPassword,
+        display_name: signupDisplayName,
+      });
+      onLogin?.();
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 409) {
+        setErrorMessage("이미 사용 중인 계정입니다.");
+      } else {
+        setErrorMessage("회원가입 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const switchMode = (mode: 'login' | 'signup') => {
@@ -178,6 +198,7 @@ function LoginPage({ onLogin }: LoginPageProps) {
                   autoComplete="username"
                   value={signupUsername}
                   onChange={(event) => setSignupUsername(event.target.value)}
+                  disabled={isSubmitting}
                   required
                 />
               </div>
@@ -192,6 +213,7 @@ function LoginPage({ onLogin }: LoginPageProps) {
                   autoComplete="email"
                   value={signupEmail}
                   onChange={(event) => setSignupEmail(event.target.value)}
+                  disabled={isSubmitting}
                   required
                 />
               </div>
@@ -206,6 +228,7 @@ function LoginPage({ onLogin }: LoginPageProps) {
                   autoComplete="nickname"
                   value={signupDisplayName}
                   onChange={(event) => setSignupDisplayName(event.target.value)}
+                  disabled={isSubmitting}
                   required
                 />
               </div>
@@ -220,6 +243,7 @@ function LoginPage({ onLogin }: LoginPageProps) {
                   autoComplete="new-password"
                   value={signupPassword}
                   onChange={(event) => setSignupPassword(event.target.value)}
+                  disabled={isSubmitting}
                   required
                 />
                 <button
@@ -227,12 +251,19 @@ function LoginPage({ onLogin }: LoginPageProps) {
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
                   aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
+                  disabled={isSubmitting}
                 >
                   {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                 </button>
               </div>
 
-              <button className="login-button" type="submit">회원가입</button>
+              {errorMessage && (
+                <p className="login-error" role="alert">{errorMessage}</p>
+              )}
+
+              <button className="login-button" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "가입 중..." : "회원가입"}
+              </button>
             </form>
 
             <p className="signup-text">
