@@ -25,6 +25,15 @@ function LockIcon() {
   );
 }
 
+function MailIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="5" width="18" height="14" rx="2" ry="2"/>
+      <path d="m3 7 9 6 9-6"/>
+    </svg>
+  );
+}
+
 function EyeIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -45,9 +54,14 @@ function EyeOffIcon() {
 }
 
 function LoginPage({ onLogin }: LoginPageProps) {
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [signupUsername, setSignupUsername] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupDisplayName, setSignupDisplayName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -70,13 +84,22 @@ function LoginPage({ onLogin }: LoginPageProps) {
     }
   };
 
+  const handleSignup = (event: { preventDefault: () => void }) => {
+    event.preventDefault();
+  };
+
+  const switchMode = (mode: 'login' | 'signup') => {
+    setAuthMode(mode);
+    setErrorMessage("");
+    setShowPassword(false);
+  };
+
   return (
     <div className="login-page">
       {/* 전체 배경 이미지 */}
       <img className="login-bg-image" src={loginBg} alt="" aria-hidden="true" />
 
-      {/* 로그인 카드 */}
-      <main className="login-card">
+      <main className={`login-card ${authMode === 'signup' ? 'signup-card' : ''}`}>
         {/* 앱 아이콘 */}
         <div className="login-logo-box">
           <div className="login-logo-wrap">
@@ -86,59 +109,138 @@ function LoginPage({ onLogin }: LoginPageProps) {
 
         <h1 className="login-title">Yggdrasil</h1>
 
-        <form className="login-form" onSubmit={handleLogin}>
-          <label className="login-label" htmlFor="email">이메일</label>
-          <div className="login-input-wrap">
-            <span className="login-input-icon"><UserIcon /></span>
-            <input
-              id="email"
-              type="email"
-              placeholder="이메일을 입력하세요"
-              autoComplete="username"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
+        {authMode === 'login' ? (
+          <>
+            <form className="login-form" onSubmit={handleLogin}>
+              <label className="login-label" htmlFor="email">이메일</label>
+              <div className="login-input-wrap">
+                <span className="login-input-icon"><MailIcon /></span>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="이메일을 입력하세요"
+                  autoComplete="username"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
 
-          <label className="login-label" htmlFor="password">비밀번호</label>
-          <div className="login-input-wrap">
-            <span className="login-input-icon"><LockIcon /></span>
-            <input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="비밀번호를 입력하세요"
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              disabled={isSubmitting}
-              required
-            />
-            <button
-              className="password-toggle"
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
-              disabled={isSubmitting}
-            >
-              {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-            </button>
-          </div>
+              <label className="login-label" htmlFor="password">비밀번호</label>
+              <div className="login-input-wrap">
+                <span className="login-input-icon"><LockIcon /></span>
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="비밀번호를 입력하세요"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  disabled={isSubmitting}
+                  required
+                />
+                <button
+                  className="password-toggle"
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
+                  disabled={isSubmitting}
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
 
-          {errorMessage && (
-            <p className="login-error" role="alert">{errorMessage}</p>
-          )}
+              {errorMessage && (
+                <p className="login-error" role="alert">{errorMessage}</p>
+              )}
 
-          <button className="login-button" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "로그인 중..." : "로그인"}
-          </button>
-        </form>
+              <button className="login-button" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "로그인 중..." : "로그인"}
+              </button>
+            </form>
 
-        <p className="signup-text">
-          계정이 없나요?{" "}
-          <button type="button" className="signup-link">회원가입</button>
-        </p>
+            <p className="signup-text">
+              계정이 없나요?{" "}
+              <button type="button" className="signup-link" onClick={() => switchMode('signup')}>회원가입</button>
+            </p>
+          </>
+        ) : (
+          <>
+            <form className="login-form signup-form" onSubmit={handleSignup}>
+              <label className="login-label" htmlFor="signup-username">아이디</label>
+              <div className="login-input-wrap">
+                <span className="login-input-icon"><UserIcon /></span>
+                <input
+                  id="signup-username"
+                  type="text"
+                  placeholder="아이디를 입력하세요"
+                  autoComplete="username"
+                  value={signupUsername}
+                  onChange={(event) => setSignupUsername(event.target.value)}
+                  required
+                />
+              </div>
+
+              <label className="login-label" htmlFor="signup-email">이메일</label>
+              <div className="login-input-wrap">
+                <span className="login-input-icon"><MailIcon /></span>
+                <input
+                  id="signup-email"
+                  type="email"
+                  placeholder="이메일을 입력하세요"
+                  autoComplete="email"
+                  value={signupEmail}
+                  onChange={(event) => setSignupEmail(event.target.value)}
+                  required
+                />
+              </div>
+
+              <label className="login-label" htmlFor="signup-display-name">닉네임</label>
+              <div className="login-input-wrap">
+                <span className="login-input-icon"><UserIcon /></span>
+                <input
+                  id="signup-display-name"
+                  type="text"
+                  placeholder="닉네임을 입력하세요"
+                  autoComplete="nickname"
+                  value={signupDisplayName}
+                  onChange={(event) => setSignupDisplayName(event.target.value)}
+                  required
+                />
+              </div>
+
+              <label className="login-label" htmlFor="signup-password">비밀번호</label>
+              <div className="login-input-wrap">
+                <span className="login-input-icon"><LockIcon /></span>
+                <input
+                  id="signup-password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="비밀번호를 입력하세요"
+                  autoComplete="new-password"
+                  value={signupPassword}
+                  onChange={(event) => setSignupPassword(event.target.value)}
+                  required
+                />
+                <button
+                  className="password-toggle"
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
+
+              <button className="login-button" type="submit">회원가입</button>
+            </form>
+
+            <p className="signup-text">
+              이미 계정이 있나요?{" "}
+              <button type="button" className="signup-link" onClick={() => switchMode('login')}>로그인</button>
+            </p>
+          </>
+        )}
       </main>
 
     </div>
