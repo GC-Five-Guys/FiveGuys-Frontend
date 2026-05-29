@@ -5,6 +5,8 @@ export interface FileNode {
   children?: FileNode[];
   createdAt?: string;
   updatedAt?: string;
+  date?: string;
+  folderId?: string | null;
 }
 
 export interface Tab {

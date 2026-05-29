@@ -1,3 +1,4 @@
+import { getNote } from '../api';
 import { FileNode } from '../types';
 
 export type TagType = 'topic' | 'person' | 'object';
@@ -146,14 +147,13 @@ export const fetchNoteTagIndex = async (treeData: FileNode[]): Promise<NoteTagIn
   const files = flattenFiles(treeData);
 
   const entries = await Promise.all(files.map(async (file) => {
-    const response = await fetch(`/api/notes/${encodeURIComponent(file.path)}`);
-    const data = await response.json();
+    const data = await getNote(file.path);
     const content = data.content || '';
     const tags = extractTagsFromHtml(content);
 
     return {
       path: file.path,
-      title: file.name.replace('.md', ''),
+      title: file.name,
       snippet: makeSnippet(content, ''),
       tags: {
         topic: uniqueTags(tags.topic),
