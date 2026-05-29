@@ -19,10 +19,41 @@ export interface BackendNote extends BackendNoteSummary {
   }>;
 }
 
+export interface CreateNoteRequest {
+  date: string;
+  title: string;
+  content: string;
+}
+
+export interface UpdateNoteRequest {
+  title: string;
+  content: string;
+}
+
 export const getNotes = () => (
   apiRequest<BackendNoteSummary[]>('/notes')
 );
 
 export const getNote = (id: string) => (
   apiRequest<BackendNote>(`/notes/${id}`)
+);
+
+export const createNote = (input: CreateNoteRequest) => (
+  apiRequest<BackendNote>('/notes', {
+    method: 'POST',
+    body: input,
+  })
+);
+
+export const updateNote = (id: string, input: UpdateNoteRequest) => (
+  apiRequest<BackendNote>(`/notes/${id}`, {
+    method: 'PUT',
+    body: input,
+  })
+);
+
+export const deleteNote = (id: string) => (
+  apiRequest<void>(`/notes/${id}`, {
+    method: 'DELETE',
+  })
 );
