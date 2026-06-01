@@ -27,6 +27,7 @@ import {
   normalizeTagLabel,
   NoteTagIndexEntry,
   NoteTagSearchResult,
+  serializeContentForBackend,
   TagType,
   tagMeta,
 } from './utils/tagSearch';
@@ -130,37 +131,40 @@ function MainApp() {
       return;
     }
 
+    const fallbackResults = tagIndex
+      .filter((note) => note.tags[type].some((tag) => tag.toLowerCase() === normalizedQuery.toLowerCase()))
+      .map((note) => ({
+        path: note.path,
+        title: note.title,
+        tags: note.tags,
+        snippet: makeSnippet(note.content, normalizedQuery),
+      }));
+    const fallbackMap = new Map(fallbackResults.map((result) => [result.path, result]));
+
     try {
       const response = await search({
         q: normalizedQuery,
         type: tagMeta[type].marker,
       });
-      const fallbackResults = tagIndex
-        .filter((note) => note.tags[type].includes(normalizedQuery))
-        .map((note) => ({
-          path: note.path,
-          title: note.title,
-          tags: note.tags,
-          snippet: makeSnippet(note.content, normalizedQuery),
-        }));
-      const fallbackMap = new Map(fallbackResults.map((result) => [result.path, result]));
-      const nextResults = response.notes.map((note) => (
-        fallbackMap.get(note._id) || {
+      const nextResults = response.notes.reduce<NoteTagSearchResult[]>((results, note) => {
+        results.push(fallbackMap.get(note._id) || {
           path: note._id,
           title: note.title,
           tags: { topic: [], person: [], object: [] },
           snippet: '본문 미리보기가 없습니다.',
-        }
-      ));
+        });
+        fallbackMap.delete(note._id);
+        return results;
+      }, []);
 
-      setTagSearchResults(nextResults);
+      setTagSearchResults([...nextResults, ...fallbackMap.values()]);
       setSelectedTagType(type);
       setTagSearchQuery(normalizedQuery);
       setActiveView('file');
       setActiveTagSearch({ type, query: normalizedQuery });
     } catch (error) {
       console.error('Tag search failed:', error);
-      setTagSearchResults([]);
+      setTagSearchResults(fallbackResults);
       setActiveView('file');
       setActiveTagSearch({ type, query: normalizedQuery });
     }
@@ -194,7 +198,7 @@ function MainApp() {
     try {
       await updateNote(currentPath, {
         title: currentNote?.name || '제목 없는 일기',
-        content,
+        content: serializeContentForBackend(content),
       });
       setSaveStatus("저장됨 ✓");
       loadTagIndex();
