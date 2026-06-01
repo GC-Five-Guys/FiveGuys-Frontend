@@ -97,9 +97,9 @@ export function useNotes() {
     }
   }, []);
 
-  const openNote = useCallback(async (path: string) => {
+  const openNote = useCallback(async (path: string, fallbackName = "") => {
     const note = findFileNode(treeData, path);
-    const name = note?.name || "";
+    const name = note?.name || fallbackName;
     setOpenTabs((prev) => {
       if (!prev.find((t) => t.path === path)) {
         return [...prev, { path, name }];

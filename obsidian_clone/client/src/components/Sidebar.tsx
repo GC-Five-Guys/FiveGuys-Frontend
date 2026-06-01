@@ -104,7 +104,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <h3>일기</h3>
           <div className="header-actions">
             <button onClick={handleCreateFolder} title="새 폴더">📁+</button>
-            <button onClick={handleCreateNote} title="새 파일">📄+</button>
+            {/* 파일 생성은 현재 캘린더에서만 제공한다. 추후 사이드바 생성 UX가 필요하면 다시 노출한다. */}
+            {/* <button onClick={handleCreateNote} title="새 파일">📄+</button> */}
           </div>
         </div>
         <ul id="note-list">
