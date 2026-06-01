@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  lint-test-build:
+    name: Lint, Test, and Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if package.json exists
+        id: check_pkg
+        run: |
+          if [ -f "package.json" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️  package.json not found. Skipping install/lint/test/build."
+          fi
+
+      - name: Setup Node.js (with cache)
+        if: steps.check_pkg.outputs.exists == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Setup Node.js (no cache)
+        if: steps.check_pkg.outputs.exists == 'false'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: npm ci
+
+      - name: Run lint
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: npm run lint --if-present
+
+      - name: Run tests
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: npm test --if-present
+
+      - name: Build Next.js
+        if: steps.check_pkg.outputs.exists == 'true'
+        run: npm run build --if-present
