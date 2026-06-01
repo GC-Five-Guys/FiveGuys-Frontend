@@ -39,6 +39,20 @@ const toDateKey = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
+const INITIAL_NOTE_CONTENT = '<p></p>';
+
+const getNoteCreateErrorMessage = (error: unknown, duplicateMessage: string) => {
+  if (error instanceof ApiError) {
+    if (error.status === 409) {
+      return duplicateMessage;
+    }
+
+    return error.message || '일기 생성에 실패했습니다.';
+  }
+
+  return '일기 생성에 실패했습니다.';
+};
+
 const getFileDateKey = (file: FileNode) => {
   if (file.date) {
     return file.date;
@@ -200,7 +214,7 @@ function MainApp() {
       const note = await createNote({
         date: toDateKey(new Date()),
         title,
-        content: '',
+        content: INITIAL_NOTE_CONTENT,
       });
 
       if (selectedFolderPath) {
@@ -208,14 +222,10 @@ function MainApp() {
       }
 
       await refreshNoteList();
-      openNote(note._id);
+      openNote(note._id, note.title);
     } catch (error) {
       console.error(error);
-      if (error instanceof ApiError && error.status === 409) {
-        alert('이미 오늘 작성된 일기가 있습니다.');
-      } else {
-        alert('일기 생성에 실패했습니다.');
-      }
+      alert(getNoteCreateErrorMessage(error, '이미 오늘 작성된 일기가 있습니다.'));
     }
   };
 
@@ -283,17 +293,13 @@ function MainApp() {
       const note = await createNote({
         date: dateKey,
         title: dateKey,
-        content: '',
+        content: INITIAL_NOTE_CONTENT,
       });
       await refreshNoteList();
-      openNote(note._id);
+      openNote(note._id, note.title);
     } catch (error) {
       console.error(error);
-      if (error instanceof ApiError && error.status === 409) {
-        alert('이미 해당 날짜의 일기가 있습니다.');
-      } else {
-        alert('일기를 생성하지 못했습니다.');
-      }
+      alert(getNoteCreateErrorMessage(error, '이미 해당 날짜의 일기가 있습니다.'));
     }
   };
 
