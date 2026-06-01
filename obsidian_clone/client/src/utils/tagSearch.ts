@@ -26,6 +26,7 @@ export const tagMeta = {
 } as const;
 
 const TAG_TOKEN_PATTERN = /(^|\s)([@#&])([^\s@#&]+)/g;
+const TAG_SYNC_COMMENT_PATTERN = /\s*<!-- yggdrasil-tags:[\s\S]*?-->\s*$/;
 
 const markerToType: Record<string, TagType> = {
   '#': 'topic',
@@ -107,6 +108,24 @@ export const extractTagsFromHtml = (html: string) => {
 };
 
 export const uniqueTags = (tags: string[]) => Array.from(new Set(tags));
+
+const tagTokenText = (tags: Record<TagType, string[]>) => {
+  const tokens = [
+    ...uniqueTags(tags.topic).map((label) => `#${label}`),
+    ...uniqueTags(tags.person).map((label) => `@${label}`),
+    ...uniqueTags(tags.object).map((label) => `&${label}`),
+  ];
+
+  return tokens.join(' ');
+};
+
+export const serializeContentForBackend = (html: string) => {
+  const tags = extractTagsFromHtml(html);
+  const tokens = tagTokenText(tags);
+  const content = html.replace(TAG_SYNC_COMMENT_PATTERN, '');
+
+  return tokens ? `${content}\n<!-- yggdrasil-tags: ${tokens} -->` : content;
+};
 
 export const extractTagsFromNodes = (nodes: BackendNote['nodes'] = []) => {
   const tags = emptyTags();
